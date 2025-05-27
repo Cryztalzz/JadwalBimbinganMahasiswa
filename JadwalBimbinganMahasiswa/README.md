@@ -1,3 +1,18 @@
+# 🎓 Anggota Kelompok
+
+<div align="center">
+
+| Nama | NIM |
+|------|-----|
+| Gregorius Alfa Putra   | 235314015 |
+| Yudha Pramudya         | 235314021 |
+| Rafael Mahesa Sakti    | 235314033 |
+| Bradley aditya pasewang| 235314034 |
+
+</div>
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
