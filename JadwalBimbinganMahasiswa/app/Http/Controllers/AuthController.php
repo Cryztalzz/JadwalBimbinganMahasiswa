@@ -14,25 +14,37 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $login = $request->input('login');
+        $password = $request->input('password');
+
+        // Coba login sebagai admin dengan username
+        if (Auth::attempt(['username' => $login, 'password' => $password])) {
             $request->session()->regenerate();
-            
-            $user = Auth::user();
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } else {
-                return redirect()->route('user.dashboard');
-            }
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Coba login sebagai dosen dengan NIP
+        $dosen = \App\Models\Dosen::where('nip', $login)->first();
+        if ($dosen && Auth::attempt(['id' => $dosen->user_id, 'password' => $password])) {
+            $request->session()->regenerate();
+            return redirect()->route('dosen.dashboard');
+        }
+
+        // Coba login sebagai mahasiswa dengan NIM
+        $mahasiswa = \App\Models\Mahasiswa::where('nim', $login)->first();
+        if ($mahasiswa && Auth::attempt(['id' => $mahasiswa->user_id, 'password' => $password])) {
+            $request->session()->regenerate();
+            return redirect()->route('mahasiswa.dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'login' => 'Username/NIP/NIM atau password salah.',
+        ])->onlyInput('login');
     }
 
     public function logout(Request $request)

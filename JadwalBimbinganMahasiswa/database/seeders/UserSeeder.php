@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
         // Buat user admin
         User::create([
             'name' => 'Admin',
+            'username' => 'admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin123'),
             'role' => 'admin'
@@ -21,6 +22,7 @@ class UserSeeder extends Seeder
         // Buat user dosen
         User::create([
             'name' => 'Dosen',
+            'username' => 'dosen',
             'email' => 'dosen@dosen.com',
             'password' => Hash::make('dosen123'),
             'role' => 'dosen'
@@ -29,6 +31,7 @@ class UserSeeder extends Seeder
         // Buat user mahasiswa
         User::create([
             'name' => 'Mahasiswa',
+            'username' => 'mahasiswa',
             'email' => 'mahasiswa@mahasiswa.com',
             'password' => Hash::make('mahasiswa123'),
             'role' => 'mahasiswa'
