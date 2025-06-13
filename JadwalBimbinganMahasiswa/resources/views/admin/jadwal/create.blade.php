@@ -45,7 +45,7 @@
 
                         <div class="mb-3">
                             <label for="tanggal" class="form-label">Tanggal</label>
-                            <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ old('tanggal') }}" required>
+                            <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required>
                             @error('tanggal')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -53,7 +53,7 @@
 
                         <div class="mb-3">
                             <label for="waktu_mulai" class="form-label">Waktu Mulai</label>
-                            <input type="time" class="form-control @error('waktu_mulai') is-invalid @enderror" id="waktu_mulai" name="waktu_mulai" value="{{ old('waktu_mulai') }}" required>
+                            <input type="time" class="form-control @error('waktu_mulai') is-invalid @enderror" id="waktu_mulai" name="waktu_mulai" value="{{ old('waktu_mulai', '09:00') }}" required>
                             @error('waktu_mulai')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -61,7 +61,7 @@
 
                         <div class="mb-3">
                             <label for="waktu_selesai" class="form-label">Waktu Selesai</label>
-                            <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu_selesai" name="waktu_selesai" value="{{ old('waktu_selesai') }}" required>
+                            <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu_selesai" name="waktu_selesai" value="{{ old('waktu_selesai', '10:00') }}" required>
                             @error('waktu_selesai')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

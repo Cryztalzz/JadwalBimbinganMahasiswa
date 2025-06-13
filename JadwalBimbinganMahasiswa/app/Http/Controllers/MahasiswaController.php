@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use App\Models\JadwalBimbingan;
+use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -67,7 +68,7 @@ class MahasiswaController extends Controller
 
     public function dashboard()
     {
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        $mahasiswa = Mahasiswa::where('email', Auth::user()->email)->first();
         
         if (!$mahasiswa) {
             return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
@@ -85,12 +86,14 @@ class MahasiswaController extends Controller
             now()->endOfWeek()
         ])->count();
 
-        return view('mahasiswa.dashboard', compact('mahasiswa', 'jadwalBimbingan', 'totalJadwal', 'jadwalHariIni', 'jadwalMingguIni'));
+        $dosen = Dosen::all();
+
+        return view('mahasiswa.dashboard', compact('mahasiswa', 'jadwalBimbingan', 'totalJadwal', 'jadwalHariIni', 'jadwalMingguIni', 'dosen'));
     }
 
     public function jadwal()
     {
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        $mahasiswa = Mahasiswa::where('email', Auth::user()->email)->first();
         
         if (!$mahasiswa) {
             return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
@@ -107,23 +110,25 @@ class MahasiswaController extends Controller
     public function buatJadwal(Request $request)
     {
         $request->validate([
+            'id_dosen' => 'required|exists:dosen,id_dosen',
             'tanggal' => 'required|date|after_or_equal:today',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required|after:waktu_mulai'
         ]);
 
-        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        $mahasiswa = Mahasiswa::where('email', Auth::user()->email)->first();
         
         if (!$mahasiswa) {
             return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
         }
 
         JadwalBimbingan::create([
+            'id_dosen' => $request->id_dosen,
             'nim' => $mahasiswa->nim,
             'tanggal' => $request->tanggal,
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
-            'status' => 'pending'
+            'status' => 'menunggu_persetujuan'
         ]);
 
         return redirect()->back()->with('success', 'Jadwal bimbingan berhasil dibuat');

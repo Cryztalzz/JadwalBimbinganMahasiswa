@@ -45,14 +45,14 @@
                                 @forelse($jadwal as $key => $j)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $j->tanggal }}</td>
-                                    <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($j->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($j->waktu_selesai)->format('H:i') }}</td>
                                     <td>{{ $j->dosen->nama_dosen }}</td>
                                     <td>{{ $j->mahasiswa->nama }}</td>
                                     <td>{{ $j->topik }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $j->status == 'pending' ? 'warning' : ($j->status == 'approved' ? 'success' : 'danger') }}">
-                                            {{ ucfirst($j->status) }}
+                                        <span class="badge bg-{{ $j->status == 'menunggu_persetujuan' ? 'warning' : ($j->status == 'disetujui' ? 'success' : 'danger') }}">
+                                            {{ str_replace('_', ' ', ucfirst($j->status)) }}
                                         </span>
                                     </td>
                                     <td class="text-center">

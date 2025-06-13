@@ -20,14 +20,16 @@ class CheckRole
             return $next($request);
         }
 
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'dosen') {
-            return redirect()->route('dosen.dashboard');
-        } elseif ($user->role === 'mahasiswa') {
-            return redirect()->route('mahasiswa.dashboard');
+        // Redirect berdasarkan role jika tidak memiliki akses
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'dosen':
+                return redirect()->route('dosen.dashboard');
+            case 'mahasiswa':
+                return redirect()->route('mahasiswa.dashboard');
+            default:
+                return redirect('login');
         }
-
-        return redirect('login');
     }
 }

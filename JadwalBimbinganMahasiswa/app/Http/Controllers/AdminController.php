@@ -302,7 +302,7 @@ class AdminController extends Controller
             'tanggal' => 'required|date',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required|after:waktu_mulai',
-            'status' => 'required|in:tersedia,dipesan,selesai'
+            'status' => 'required|in:menunggu_persetujuan,disetujui,ditolak'
         ]);
 
         $jadwal->update([

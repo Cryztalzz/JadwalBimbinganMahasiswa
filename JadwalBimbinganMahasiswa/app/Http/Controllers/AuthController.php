@@ -30,11 +30,32 @@ class AuthController extends Controller
             // Redirect berdasarkan role
             switch ($user->role) {
                 case 'admin':
-                    return redirect()->intended(route('admin.dashboard'));
+                    return redirect()->route('admin.dashboard');
                 case 'dosen':
-                    return redirect()->intended(route('dosen.dashboard'));
+                    return redirect()->route('dosen.dashboard');
                 case 'mahasiswa':
-                    return redirect()->intended(route('mahasiswa.dashboard'));
+                    return redirect()->route('mahasiswa.dashboard');
+                default:
+                    Auth::logout();
+                    return back()->withErrors([
+                        'login' => 'Role tidak valid.',
+                    ])->onlyInput('login');
+            }
+        }
+
+        // Coba login dengan email
+        if (Auth::attempt(['email' => $login, 'password' => $password])) {
+            $user = Auth::user();
+            $request->session()->regenerate();
+
+            // Redirect berdasarkan role
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->route('admin.dashboard');
+                case 'dosen':
+                    return redirect()->route('dosen.dashboard');
+                case 'mahasiswa':
+                    return redirect()->route('mahasiswa.dashboard');
                 default:
                     Auth::logout();
                     return back()->withErrors([

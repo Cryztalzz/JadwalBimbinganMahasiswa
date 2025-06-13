@@ -85,12 +85,12 @@
                             <tbody>
                                 @forelse($jadwalBimbingan as $jadwal)
                                 <tr>
-                                    <td>{{ $jadwal->tanggal }}</td>
-                                    <td>{{ $jadwal->waktu_mulai }} - {{ $jadwal->waktu_selesai }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
                                     <td>{{ $jadwal->dosen->nama_dosen }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $jadwal->status == 'pending' ? 'warning' : ($jadwal->status == 'approved' ? 'success' : 'danger') }}">
-                                            {{ ucfirst($jadwal->status) }}
+                                        <span class="badge bg-{{ $jadwal->status == 'menunggu_persetujuan' ? 'warning' : ($jadwal->status == 'disetujui' ? 'success' : 'danger') }}">
+                                            {{ $jadwal->status == 'menunggu_persetujuan' ? 'Menunggu Persetujuan' : ($jadwal->status == 'disetujui' ? 'Disetujui' : 'Ditolak') }}
                                         </span>
                                     </td>
                                 </tr>
@@ -120,16 +120,51 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="id_dosen" class="form-label">Dosen</label>
+                        <select class="form-select @error('id_dosen') is-invalid @enderror" id="id_dosen" name="id_dosen" required>
+                            <option value="">Pilih Dosen</option>
+                            @foreach($dosen as $d)
+                                <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
+                                    {{ $d->nama_dosen }} ({{ $d->nip }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('id_dosen')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
                         <label for="tanggal" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                        <input type="date" class="form-control @error('tanggal') is-invalid @enderror" 
+                            id="tanggal" name="tanggal" 
+                            value="{{ old('tanggal', date('Y-m-d')) }}" 
+                            min="{{ date('Y-m-d') }}"
+                            required>
+                        @error('tanggal')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="waktu_mulai" class="form-label">Waktu Mulai</label>
-                        <input type="time" class="form-control" id="waktu_mulai" name="waktu_mulai" required>
+                        <input type="time" class="form-control @error('waktu_mulai') is-invalid @enderror" 
+                            id="waktu_mulai" name="waktu_mulai" 
+                            value="{{ old('waktu_mulai', '09:00') }}"
+                            min="08:00" max="17:00"
+                            required>
+                        @error('waktu_mulai')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="waktu_selesai" class="form-label">Waktu Selesai</label>
-                        <input type="time" class="form-control" id="waktu_selesai" name="waktu_selesai" required>
+                        <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" 
+                            id="waktu_selesai" name="waktu_selesai" 
+                            value="{{ old('waktu_selesai', '10:00') }}"
+                            min="08:00" max="17:00"
+                            required>
+                        @error('waktu_selesai')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">

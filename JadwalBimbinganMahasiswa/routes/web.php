@@ -7,15 +7,16 @@ use App\Http\Controllers\DosenController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 // Route untuk autentikasi
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 // Route untuk Dosen
 Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
@@ -27,10 +28,10 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
 });
 
 // Route untuk Mahasiswa
-Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(function () {
-    Route::get('/dashboard', [MahasiswaController::class, 'dashboard'])->name('mahasiswa.dashboard');
-    Route::get('/jadwal', [MahasiswaController::class, 'jadwal'])->name('mahasiswa.jadwal');
-    Route::post('/jadwal', [MahasiswaController::class, 'buatJadwal'])->name('mahasiswa.jadwal.store');
+Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+    Route::get('/dashboard', [MahasiswaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/jadwal', [MahasiswaController::class, 'jadwal'])->name('jadwal');
+    Route::post('/jadwal', [MahasiswaController::class, 'buatJadwal'])->name('jadwal.store');
 });
 
 // Route untuk Admin

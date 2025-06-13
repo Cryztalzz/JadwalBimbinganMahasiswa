@@ -6,14 +6,16 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Jadwal Bimbingan</span>
-                    <a href="{{ route('dosen.dashboard') }}" class="btn btn-secondary btn-sm">Kembali ke Dashboard</a>
+                    <h5 class="mb-0">Jadwal Bimbingan</h5>
+                    <a href="{{ route('dosen.dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Dashboard
+                    </a>
                 </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Tanggal</th>
                                     <th>Waktu</th>

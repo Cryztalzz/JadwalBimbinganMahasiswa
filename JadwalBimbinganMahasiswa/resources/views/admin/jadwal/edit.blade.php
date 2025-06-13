@@ -71,9 +71,9 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                <option value="tersedia" {{ old('status', $jadwal->status) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                <option value="dipesan" {{ old('status', $jadwal->status) == 'dipesan' ? 'selected' : '' }}>Dipesan</option>
-                                <option value="selesai" {{ old('status', $jadwal->status) == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="menunggu_persetujuan" {{ old('status', $jadwal->status) == 'menunggu_persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>
+                                <option value="disetujui" {{ old('status', $jadwal->status) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="ditolak" {{ old('status', $jadwal->status) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
