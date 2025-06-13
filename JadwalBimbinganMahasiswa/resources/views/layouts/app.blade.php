@@ -25,6 +25,8 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1030;
         }
 
         .navbar-brand {
@@ -44,6 +46,32 @@
         .nav-link:hover {
             background: rgba(255, 255, 255, 0.1);
             color: white !important;
+        }
+
+        .dropdown-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 0.5rem;
+            z-index: 1031;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item:active {
+            background: var(--primary-color);
+            color: white;
         }
 
         .card {
@@ -79,6 +107,19 @@
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .btn-success {
@@ -87,6 +128,39 @@
 
         .btn-info {
             background: linear-gradient(135deg, var(--info-color) 0%, #74b9ff 100%);
+        }
+
+        /* Custom styles for admin dashboard buttons */
+        .btn-dashboard-admin {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(5px);
+            text-transform: none !important;
+            padding: 10px 20px !important;
+            color: white !important;
+            transition: all 0.3s ease;
+            font-weight: 700 !important;
+            text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .btn-dashboard-admin:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Base colors for custom dashboard buttons */
+        .btn-dashboard-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+        }
+
+        .btn-dashboard-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #00cec9 100%) !important;
+        }
+
+        .btn-dashboard-info {
+            background: linear-gradient(135deg, var(--info-color) 0%, #74b9ff 100%) !important;
         }
 
         .table {
@@ -120,6 +194,34 @@
             border-color: var(--primary-color);
         }
 
+        .logo-container {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .logo-container i {
+            color: white !important;
+        }
+
+        .input-group-text {
+            border-radius: 10px 0 0 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .input-group .form-control {
+            border-radius: 0;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
         @media (max-width: 768px) {
             .card {
                 margin: 1rem;
@@ -140,27 +242,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @guest
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">
-                                <i class="fas fa-sign-in-alt me-2"></i>
-                                Login
-                            </a>
-                        </li>
                     @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.dashboard') }}">
-                                <i class="fas fa-home me-2"></i>
-                                Dashboard
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>
+                                {{ Auth::user()->name }}
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                @csrf
-                                <button type="submit" class="nav-link border-0 bg-transparent">
-                                    <i class="fas fa-sign-out-alt me-2"></i>
-                                    Logout
-                                </button>
-                            </form>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     @endguest
                 </ul>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
+use App\Models\JadwalBimbingan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MahasiswaController extends Controller
 {
@@ -61,5 +63,69 @@ class MahasiswaController extends Controller
     {
         $mahasiswa->delete();
         return redirect()->route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus');
+    }
+
+    public function dashboard()
+    {
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        
+        if (!$mahasiswa) {
+            return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
+        }
+
+        $jadwalBimbingan = JadwalBimbingan::with('dosen')
+            ->where('nim', $mahasiswa->nim)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $totalJadwal = $jadwalBimbingan->count();
+        $jadwalHariIni = $jadwalBimbingan->where('tanggal', date('Y-m-d'))->count();
+        $jadwalMingguIni = $jadwalBimbingan->whereBetween('tanggal', [
+            now()->startOfWeek(),
+            now()->endOfWeek()
+        ])->count();
+
+        return view('mahasiswa.dashboard', compact('mahasiswa', 'jadwalBimbingan', 'totalJadwal', 'jadwalHariIni', 'jadwalMingguIni'));
+    }
+
+    public function jadwal()
+    {
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        
+        if (!$mahasiswa) {
+            return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
+        }
+
+        $jadwalBimbingan = JadwalBimbingan::with('dosen')
+            ->where('nim', $mahasiswa->nim)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        return view('mahasiswa.jadwal', compact('mahasiswa', 'jadwalBimbingan'));
+    }
+
+    public function buatJadwal(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date|after_or_equal:today',
+            'waktu_mulai' => 'required',
+            'waktu_selesai' => 'required|after:waktu_mulai'
+        ]);
+
+        $mahasiswa = Mahasiswa::where('nim', Auth::user()->username)->first();
+        
+        if (!$mahasiswa) {
+            return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
+        }
+
+        JadwalBimbingan::create([
+            'nim' => $mahasiswa->nim,
+            'tanggal' => $request->tanggal,
+            'waktu_mulai' => $request->waktu_mulai,
+            'waktu_selesai' => $request->waktu_selesai,
+            'status' => 'pending'
+        ]);
+
+        return redirect()->back()->with('success', 'Jadwal bimbingan berhasil dibuat');
     }
 } 

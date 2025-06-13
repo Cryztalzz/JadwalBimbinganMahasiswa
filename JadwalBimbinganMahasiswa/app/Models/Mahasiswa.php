@@ -2,28 +2,32 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Mahasiswa extends Model
 {
+    use HasFactory;
+
     protected $table = 'mahasiswa';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'nim';
     public $timestamps = false;
 
     protected $fillable = [
         'nim',
         'nama',
-        'jurusan',
-        'angkatan'
+        'email',
+        'password',
+        'notelp'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'email', 'email');
+    }
 
     public function jadwalBimbingan()
     {
-        return $this->hasMany(JadwalBimbingan::class, 'id_mahasiswa');
+        return $this->hasMany(JadwalBimbingan::class, 'nim', 'nim');
     }
-
-    public function permintaanBimbingan()
-    {
-        return $this->hasMany(PermintaanBimbingan::class, 'id_mahasiswa');
-    }
-} 
+}

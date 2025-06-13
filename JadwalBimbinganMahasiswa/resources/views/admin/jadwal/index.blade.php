@@ -7,15 +7,15 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-tie me-2"></i>
-                        Kelola Dosen
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Kelola Jadwal
                     </h5>
                     <div>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary btn-custom btn-sm me-2">
                             <i class="fas fa-arrow-left me-1"></i> Kembali
                         </a>
-                        <a href="{{ route('admin.dosen.create') }}" class="btn btn-primary btn-custom btn-sm">
-                            <i class="fas fa-plus me-1"></i> Tambah Dosen
+                        <a href="{{ route('admin.jadwal.create') }}" class="btn btn-primary btn-custom btn-sm">
+                            <i class="fas fa-plus me-1"></i> Tambah Jadwal
                         </a>
                     </div>
                 </div>
@@ -28,33 +28,41 @@
                     @endif
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-light">
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Email</th>
-                                    <th>NIP</th>
-                                    <th>No. Telepon</th>
-                                    <th class="text-center">Aksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Waktu</th>
+                                    <th>Dosen</th>
+                                    <th>Mahasiswa</th>
+                                    <th>Topik</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($dosen as $key => $d)
+                                @forelse($jadwal as $key => $j)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $d->nama_dosen }}</td>
-                                    <td>{{ $d->user->email }}</td>
-                                    <td>{{ $d->nip }}</td>
-                                    <td>{{ $d->notelp }}</td>
+                                    <td>{{ $j->tanggal }}</td>
+                                    <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
+                                    <td>{{ $j->dosen->nama_dosen }}</td>
+                                    <td>{{ $j->mahasiswa->nama }}</td>
+                                    <td>{{ $j->topik }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ $j->status == 'pending' ? 'warning' : ($j->status == 'approved' ? 'success' : 'danger') }}">
+                                            {{ ucfirst($j->status) }}
+                                        </span>
+                                    </td>
                                     <td class="text-center">
-                                        <a href="{{ route('admin.dosen.edit', $d->id_dosen) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('admin.jadwal.edit', $j->id_jadwal) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit me-1"></i> Edit
                                         </a>
-                                        <form action="{{ route('admin.dosen.destroy', $d->id_dosen) }}" method="POST" class="d-inline">
+                                        <form action="{{ route('admin.jadwal.destroy', $j->id_jadwal) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus dosen ini?')">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?')">
                                                 <i class="fas fa-trash me-1"></i> Hapus
                                             </button>
                                         </form>
@@ -62,7 +70,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data dosen</td>
+                                    <td colspan="8" class="text-center">Tidak ada data jadwal</td>
                                 </tr>
                                 @endforelse
                             </tbody>

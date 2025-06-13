@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('jadwal_bimbingan', function (Blueprint $table) {
             $table->id('id_jadwal');
             $table->foreignId('id_dosen')->constrained('dosen', 'id_dosen')->onDelete('cascade');
+            $table->string('nim');
+            $table->foreign('nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
             $table->date('tanggal');
+            $table->time('waktu_mulai');
+            $table->time('waktu_selesai');
+            $table->enum('status', ['tersedia', 'dipesan', 'selesai'])->default('tersedia');
             $table->timestamps();
         });
     }

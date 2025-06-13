@@ -1,34 +1,65 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MahasiswaController;
-use App\Http\Controllers\DosenController;
-use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\UserController;
 
-// Route untuk guest (belum login)
+// Route untuk autentikasi
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// Route untuk Dosen
+Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
+    Route::get('/dashboard', [DosenController::class, 'dashboard'])->name('dashboard');
+    Route::get('/jadwal', [DosenController::class, 'jadwal'])->name('jadwal');
+    Route::get('/jadwal/{id}/edit', [DosenController::class, 'jadwalEdit'])->name('jadwal.edit');
+    Route::put('/jadwal/{id}', [DosenController::class, 'jadwalUpdate'])->name('jadwal.update');
+    Route::delete('/jadwal/{id}', [DosenController::class, 'jadwalDestroy'])->name('jadwal.destroy');
+});
+
+// Route untuk Mahasiswa
+Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->group(function () {
+    Route::get('/dashboard', [MahasiswaController::class, 'dashboard'])->name('mahasiswa.dashboard');
+    Route::get('/jadwal', [MahasiswaController::class, 'jadwal'])->name('mahasiswa.jadwal');
+    Route::post('/jadwal', [MahasiswaController::class, 'buatJadwal'])->name('mahasiswa.jadwal.store');
+});
+
+// Route untuk Admin
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
     // Route untuk manajemen dosen
-    Route::resource('dosen', AdminController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/dosen', [AdminController::class, 'dosenIndex'])->name('dosen.index');
+    Route::get('/dosen/create', [AdminController::class, 'dosenCreate'])->name('dosen.create');
+    Route::post('/dosen', [AdminController::class, 'dosenStore'])->name('dosen.store');
+    Route::get('/dosen/{id}/edit', [AdminController::class, 'dosenEdit'])->name('dosen.edit');
+    Route::put('/dosen/{id}', [AdminController::class, 'dosenUpdate'])->name('dosen.update');
+    Route::delete('/dosen/{id}', [AdminController::class, 'dosenDestroy'])->name('dosen.destroy');
     
     // Route untuk manajemen mahasiswa
-    Route::resource('mahasiswa', AdminController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/mahasiswa', [AdminController::class, 'mahasiswaIndex'])->name('mahasiswa.index');
+    Route::get('/mahasiswa/create', [AdminController::class, 'mahasiswaCreate'])->name('mahasiswa.create');
+    Route::post('/mahasiswa', [AdminController::class, 'mahasiswaStore'])->name('mahasiswa.store');
+    Route::get('/mahasiswa/{id}/edit', [AdminController::class, 'mahasiswaEdit'])->name('mahasiswa.edit');
+    Route::put('/mahasiswa/{id}', [AdminController::class, 'mahasiswaUpdate'])->name('mahasiswa.update');
+    Route::delete('/mahasiswa/{id}', [AdminController::class, 'mahasiswaDestroy'])->name('mahasiswa.destroy');
     
     // Route untuk manajemen jadwal
-    Route::resource('jadwal', AdminController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/jadwal', [AdminController::class, 'jadwalIndex'])->name('jadwal.index');
+    Route::get('/jadwal/create', [AdminController::class, 'jadwalCreate'])->name('jadwal.create');
+    Route::post('/jadwal', [AdminController::class, 'jadwalStore'])->name('jadwal.store');
+    Route::get('/jadwal/{id}/edit', [AdminController::class, 'jadwalEdit'])->name('jadwal.edit');
+    Route::put('/jadwal/{id}', [AdminController::class, 'jadwalUpdate'])->name('jadwal.update');
+    Route::delete('/jadwal/{id}', [AdminController::class, 'jadwalDestroy'])->name('jadwal.destroy');
 });
 
 // User routes (Dosen & Mahasiswa)
@@ -36,3 +67,8 @@ Route::resource('mahasiswa', MahasiswaController::class);
 Route::resource('dosen', DosenController::class);
 Route::resource('jadwal', JadwalController::class);
 Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});

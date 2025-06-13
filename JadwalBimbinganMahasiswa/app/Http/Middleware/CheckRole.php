@@ -4,16 +4,30 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!$request->user() || !in_array($request->user()->role, $roles)) {
-            abort(403, 'Unauthorized action.');
+        if (!Auth::check()) {
+            return redirect('login');
         }
 
-        return $next($request);
+        $user = Auth::user();
+        
+        if (in_array($user->role, $roles)) {
+            return $next($request);
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'dosen') {
+            return redirect()->route('dosen.dashboard');
+        } elseif ($user->role === 'mahasiswa') {
+            return redirect()->route('mahasiswa.dashboard');
+        }
+
+        return redirect('login');
     }
 }

@@ -22,28 +22,29 @@ class AuthController extends Controller
         $login = $request->input('login');
         $password = $request->input('password');
 
-        // Coba login sebagai admin dengan username
+        // Coba login dengan username
         if (Auth::attempt(['username' => $login, 'password' => $password])) {
+            $user = Auth::user();
             $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
-        }
 
-        // Coba login sebagai dosen dengan NIP
-        $dosen = \App\Models\Dosen::where('nip', $login)->first();
-        if ($dosen && Auth::attempt(['id' => $dosen->user_id, 'password' => $password])) {
-            $request->session()->regenerate();
-            return redirect()->route('dosen.dashboard');
-        }
-
-        // Coba login sebagai mahasiswa dengan NIM
-        $mahasiswa = \App\Models\Mahasiswa::where('nim', $login)->first();
-        if ($mahasiswa && Auth::attempt(['id' => $mahasiswa->user_id, 'password' => $password])) {
-            $request->session()->regenerate();
-            return redirect()->route('mahasiswa.dashboard');
+            // Redirect berdasarkan role
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->intended(route('admin.dashboard'));
+                case 'dosen':
+                    return redirect()->intended(route('dosen.dashboard'));
+                case 'mahasiswa':
+                    return redirect()->intended(route('mahasiswa.dashboard'));
+                default:
+                    Auth::logout();
+                    return back()->withErrors([
+                        'login' => 'Role tidak valid.',
+                    ])->onlyInput('login');
+            }
         }
 
         return back()->withErrors([
-            'login' => 'Username/NIP/NIM atau password salah.',
+            'login' => 'Username atau password salah.',
         ])->onlyInput('login');
     }
 
@@ -54,4 +55,4 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
-} 
+}

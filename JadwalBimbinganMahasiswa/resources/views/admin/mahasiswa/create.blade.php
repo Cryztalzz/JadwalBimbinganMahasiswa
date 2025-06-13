@@ -7,16 +7,16 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-tie me-2"></i>
-                        Tambah Dosen Baru
+                        <i class="fas fa-user-graduate me-2"></i>
+                        Tambah Mahasiswa Baru
                     </h5>
-                    <a href="{{ route('admin.dosen.index') }}" class="btn btn-secondary btn-sm">
+                    <a href="{{ route('admin.mahasiswa.index') }}" class="btn btn-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Kembali
                     </a>
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.dosen.store') }}">
+                    <form method="POST" action="{{ route('admin.mahasiswa.store') }}">
                         @csrf
 
                         <div class="mb-3">
@@ -51,9 +51,29 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="nip" class="form-label">NIP</label>
-                            <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip') }}" required>
-                            @error('nip')
+                            <label for="nim" class="form-label">NIM</label>
+                            <input type="text" class="form-control @error('nim') is-invalid @enderror" id="nim" name="nim" value="{{ old('nim') }}" required>
+                            @error('nim')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="jurusan" class="form-label">Jurusan</label>
+                            <input type="text" class="form-control @error('jurusan') is-invalid @enderror" id="jurusan" name="jurusan" value="{{ old('jurusan') }}" required>
+                            @error('jurusan')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="angkatan" class="form-label">Angkatan</label>
+                            <input type="number" class="form-control @error('angkatan') is-invalid @enderror" id="angkatan" name="angkatan" value="{{ old('angkatan') }}" required>
+                            @error('angkatan')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
