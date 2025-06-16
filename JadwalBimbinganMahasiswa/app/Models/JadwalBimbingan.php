@@ -20,6 +20,7 @@ class JadwalBimbingan extends Model
         'tanggal',
         'waktu_mulai',
         'waktu_selesai',
+        'topik',
         'status'
     ];
 

@@ -113,7 +113,8 @@ class MahasiswaController extends Controller
             'id_dosen' => 'required|exists:dosen,id_dosen',
             'tanggal' => 'required|date|after_or_equal:today',
             'waktu_mulai' => 'required',
-            'waktu_selesai' => 'required|after:waktu_mulai'
+            'waktu_selesai' => 'required|after:waktu_mulai',
+            'topik' => 'required|string|max:255'
         ]);
 
         $mahasiswa = Mahasiswa::where('email', Auth::user()->email)->first();
@@ -128,6 +129,7 @@ class MahasiswaController extends Controller
             'tanggal' => $request->tanggal,
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
+            'topik' => $request->topik,
             'status' => 'menunggu_persetujuan'
         ]);
 

@@ -18,6 +18,7 @@
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
                                     <th>Mahasiswa</th>
+                                    <th>Topik</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -28,6 +29,7 @@
                                     <td>{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
                                     <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
                                     <td>{{ $j->mahasiswa->nama }}</td>
+                                    <td>{{ $j->topik }}</td>
                                     <td>
                                         @if($j->status == 'tersedia')
                                             <span class="badge bg-success">Tersedia</span>

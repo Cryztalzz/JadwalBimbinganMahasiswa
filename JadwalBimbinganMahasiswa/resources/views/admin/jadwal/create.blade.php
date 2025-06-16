@@ -67,6 +67,14 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="topik" class="form-label">Topik Bimbingan</label>
+                            <input type="text" class="form-control @error('topik') is-invalid @enderror" id="topik" name="topik" value="{{ old('topik') }}" required>
+                            @error('topik')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('admin.jadwal.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Kembali

@@ -69,6 +69,14 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="topik" class="form-label">Topik Bimbingan</label>
+                            <input type="text" class="form-control @error('topik') is-invalid @enderror" id="topik" name="topik" value="{{ old('topik', $jadwal->topik) }}" required>
+                            @error('topik')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                 <option value="menunggu_persetujuan" {{ old('status', $jadwal->status) == 'menunggu_persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>

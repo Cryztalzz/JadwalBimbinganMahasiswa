@@ -267,7 +267,8 @@ class AdminController extends Controller
             'nim' => 'required|exists:mahasiswa,nim',
             'tanggal' => 'required|date',
             'waktu_mulai' => 'required',
-            'waktu_selesai' => 'required|after:waktu_mulai'
+            'waktu_selesai' => 'required|after:waktu_mulai',
+            'topik' => 'required|string|max:255'
         ]);
 
         JadwalBimbingan::create([
@@ -276,6 +277,7 @@ class AdminController extends Controller
             'tanggal' => $request->tanggal,
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
+            'topik' => $request->topik,
             'status' => 'dipesan'
         ]);
 
@@ -302,6 +304,7 @@ class AdminController extends Controller
             'tanggal' => 'required|date',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required|after:waktu_mulai',
+            'topik' => 'required|string|max:255',
             'status' => 'required|in:menunggu_persetujuan,disetujui,ditolak'
         ]);
 
@@ -311,6 +314,7 @@ class AdminController extends Controller
             'tanggal' => $request->tanggal,
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
+            'topik' => $request->topik,
             'status' => $request->status
         ]);
 

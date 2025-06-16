@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->time('waktu_mulai');
             $table->time('waktu_selesai');
+            $table->string('topik')->nullable();
             $table->enum('status', ['tersedia', 'dipesan', 'selesai'])->default('tersedia');
             $table->timestamps();
         });

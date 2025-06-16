@@ -79,6 +79,7 @@
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
                                     <th>Dosen</th>
+                                    <th>Topik</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -88,6 +89,7 @@
                                     <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
                                     <td>{{ $jadwal->dosen->nama_dosen }}</td>
+                                    <td>{{ $jadwal->topik }}</td>
                                     <td>
                                         <span class="badge bg-{{ $jadwal->status == 'menunggu_persetujuan' ? 'warning' : ($jadwal->status == 'disetujui' ? 'success' : 'danger') }}">
                                             {{ $jadwal->status == 'menunggu_persetujuan' ? 'Menunggu Persetujuan' : ($jadwal->status == 'disetujui' ? 'Disetujui' : 'Ditolak') }}
@@ -157,12 +159,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="waktu_selesai" class="form-label">Waktu Selesai</label>
-                        <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" 
-                            id="waktu_selesai" name="waktu_selesai" 
-                            value="{{ old('waktu_selesai', '10:00') }}"
-                            min="08:00" max="17:00"
-                            required>
+                        <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu_selesai" name="waktu_selesai" value="{{ old('waktu_selesai') }}" required>
                         @error('waktu_selesai')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="topik" class="form-label">Topik Bimbingan</label>
+                        <input type="text" class="form-control @error('topik') is-invalid @enderror" id="topik" name="topik" value="{{ old('topik') }}" required>
+                        @error('topik')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
