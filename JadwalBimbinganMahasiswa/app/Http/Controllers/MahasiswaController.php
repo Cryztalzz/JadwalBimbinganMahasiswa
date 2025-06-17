@@ -99,12 +99,12 @@ class MahasiswaController extends Controller
             return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
         }
 
-        $jadwalBimbingan = JadwalBimbingan::with('dosen')
-            ->where('nim', $mahasiswa->nim)
-            ->orderBy('tanggal', 'desc')
+        $jadwal = JadwalBimbingan::where('nim', $mahasiswa->nim)
+            ->with(['dosen', 'mahasiswa'])
+            ->latest()
             ->get();
-
-        return view('mahasiswa.jadwal', compact('mahasiswa', 'jadwalBimbingan'));
+            
+        return view('mahasiswa.jadwal', compact('jadwal'));
     }
 
     public function buatJadwal(Request $request)

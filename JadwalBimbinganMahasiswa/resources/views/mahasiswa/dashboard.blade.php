@@ -67,9 +67,14 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Jadwal Bimbingan Terbaru</h5>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buatJadwalModal">
-                        <i class="fas fa-plus"></i> Buat Jadwal Baru
-                    </button>
+                    <div>
+                        <a href="{{ route('jadwal-bimbingan.index') }}" class="btn btn-info btn-custom me-2">
+                            <i class="fas fa-list-alt"></i> Lihat Semua Jadwal
+                        </a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buatJadwalModal">
+                            <i class="fas fa-plus"></i> Buat Jadwal Baru
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -91,8 +96,8 @@
                                     <td>{{ $jadwal->dosen->nama_dosen }}</td>
                                     <td>{{ $jadwal->topik }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $jadwal->status == 'menunggu_persetujuan' ? 'warning' : ($jadwal->status == 'disetujui' ? 'success' : 'danger') }}">
-                                            {{ $jadwal->status == 'menunggu_persetujuan' ? 'Menunggu Persetujuan' : ($jadwal->status == 'disetujui' ? 'Disetujui' : 'Ditolak') }}
+                                        <span class="badge bg-{{ $jadwal->status == 'menunggu_persetujuan' ? 'warning' : ($jadwal->status == 'disetujui' ? 'success' : ($jadwal->status == 'dibatalkan' ? 'secondary' : 'danger')) }}">
+                                            {{ $jadwal->status == 'menunggu_persetujuan' ? 'Menunggu Persetujuan' : ($jadwal->status == 'disetujui' ? 'Disetujui' : ($jadwal->status == 'dibatalkan' ? 'Dibatalkan' : 'Ditolak')) }}
                                         </span>
                                     </td>
                                 </tr>

@@ -94,6 +94,8 @@
                                             <span class="badge bg-warning">Menunggu Persetujuan</span>
                                         @elseif($j->status == 'disetujui')
                                             <span class="badge bg-success">Disetujui</span>
+                                        @elseif($j->status == 'dibatalkan')
+                                            <span class="badge bg-secondary">Dibatalkan</span>
                                         @else
                                             <span class="badge bg-danger">Ditolak</span>
                                         @endif

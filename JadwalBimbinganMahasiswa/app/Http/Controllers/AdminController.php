@@ -9,6 +9,7 @@ use App\Models\JadwalBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -18,10 +19,27 @@ class AdminController extends Controller
         $totalMahasiswa = Mahasiswa::count();
         $totalJadwal = JadwalBimbingan::count();
 
+        // Statistik bimbingan hari ini
+        $bimbinganHariIni = JadwalBimbingan::whereDate('tanggal', Carbon::today())->count();
+        
+        // Statistik bimbingan minggu ini
+        $bimbinganMingguIni = JadwalBimbingan::whereBetween('tanggal', [
+            Carbon::now()->startOfWeek(),
+            Carbon::now()->endOfWeek()
+        ])->count();
+        
+        // Statistik status bimbingan
+        $menungguKonfirmasi = JadwalBimbingan::where('status', 'menunggu_persetujuan')->count();
+        $bimbinganAktif = JadwalBimbingan::where('status', 'disetujui')->count();
+
         return view('admin.dashboard', compact(
             'totalDosen',
             'totalMahasiswa',
-            'totalJadwal'
+            'totalJadwal',
+            'bimbinganHariIni',
+            'bimbinganMingguIni',
+            'menungguKonfirmasi',
+            'bimbinganAktif'
         ));
     }
 

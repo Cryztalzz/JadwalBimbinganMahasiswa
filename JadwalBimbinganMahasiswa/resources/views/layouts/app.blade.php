@@ -232,7 +232,7 @@
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="{{ auth()->check() ? (auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->user()->role === 'dosen' ? route('dosen.dashboard') : route('mahasiswa.dashboard'))) : '/' }}">
                 <i class="fas fa-graduation-cap me-2"></i>
                 Jadwal Bimbingan
             </a>
@@ -245,19 +245,30 @@
                     @else
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i>
+                                <img src="{{ Auth::user()->photo ? asset('storage/photos/' . Auth::user()->photo) : asset('images/default-avatar.jpg') }}" 
+                                    alt="Foto Profil" 
+                                    class="rounded-circle me-2"
+                                    style="width: 30px; height: 30px; object-fit: cover;">
                                 {{ Auth::user()->name }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                    <i class="fas fa-user me-2"></i> Profil
+                                </a>
+                                <a class="dropdown-item" href="{{ route('help.faq') }}">
+                                    <i class="fas fa-question-circle me-2"></i> FAQ
+                                </a>
+                                <a class="dropdown-item" href="{{ route('help.contact') }}">
+                                    <i class="fas fa-headset me-2"></i> Kontak Support
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     @endguest
                 </ul>
@@ -270,5 +281,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('scripts')
 </body>
 </html> 

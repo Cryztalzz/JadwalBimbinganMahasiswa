@@ -26,7 +26,7 @@
                             </a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{ route('jadwal.index') }}" class="sidebar-link text-decoration-none d-flex align-items-center">
+                            <a href="{{ Auth::user()->role === 'dosen' ? route('dosen.dashboard') : (Auth::user()->role === 'mahasiswa' ? route('mahasiswa.dashboard') : route('admin.dashboard')) }}" class="sidebar-link text-decoration-none d-flex align-items-center">
                                 <i class="fas fa-calendar me-2"></i>
                                 Jadwal Bimbingan
                             </a>

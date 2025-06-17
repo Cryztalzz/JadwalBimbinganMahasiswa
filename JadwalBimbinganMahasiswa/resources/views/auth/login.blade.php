@@ -45,24 +45,19 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="password" class="form-label text-muted">
-                                <i class="fas fa-lock me-2"></i>Password
-                            </label>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="fas fa-lock text-primary"></i>
                                 </span>
-                                <input id="password" type="password" 
-                                    class="form-control form-control-lg border-start-0 @error('password') is-invalid @enderror" 
-                                    name="password" 
-                                    required autocomplete="current-password"
-                                    placeholder="Masukkan password">
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
                             @error('password')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -83,4 +78,23 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
 @endsection 

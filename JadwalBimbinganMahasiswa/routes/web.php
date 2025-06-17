@@ -8,11 +8,38 @@ use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HelpController;
+use App\Http\Controllers\JadwalBimbinganController;
 
 // Route untuk autentikasi
 Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'dosen') {
+            return redirect()->route('dosen.dashboard');
+        } elseif ($user->role === 'mahasiswa') {
+            return redirect()->route('mahasiswa.dashboard');
+        }
+    }
     return view('welcome');
-});
+})->middleware('guest');
+
+Route::get('/home', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'dosen') {
+            return redirect()->route('dosen.dashboard');
+        } elseif ($user->role === 'mahasiswa') {
+            return redirect()->route('mahasiswa.dashboard');
+        }
+    }
+    return redirect('/');
+})->middleware('auth');
 
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
@@ -72,4 +99,23 @@ Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard
 // Admin routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Profile Routes
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::put('/profile/photo', [App\Http\Controllers\ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+});
+
+// Help Routes
+Route::get('/help/faq', [HelpController::class, 'faq'])->name('help.faq');
+Route::get('/help/contact', [HelpController::class, 'contact'])->name('help.contact');
+
+// Jadwal Bimbingan Routes
+Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
+    Route::get('/jadwal-bimbingan', [JadwalBimbinganController::class, 'index'])->name('jadwal-bimbingan.index');
+    Route::get('/jadwal-bimbingan/create', [JadwalBimbinganController::class, 'create'])->name('jadwal-bimbingan.create');
+    Route::post('/jadwal-bimbingan', [JadwalBimbinganController::class, 'store'])->name('jadwal-bimbingan.store');
+    Route::post('/jadwal-bimbingan/{id}/cancel', [JadwalBimbinganController::class, 'cancel'])->name('jadwal-bimbingan.cancel');
 });

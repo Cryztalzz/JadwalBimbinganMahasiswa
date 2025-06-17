@@ -77,6 +77,62 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Statistik Tambahan -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-warning text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-chart-line me-2"></i>
+                                        Statistik Bimbingan
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="stat-item mb-3">
+                                                <h6 class="text-muted">Bimbingan Hari Ini</h6>
+                                                <h3>{{ $bimbinganHariIni }}</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="stat-item mb-3">
+                                                <h6 class="text-muted">Bimbingan Minggu Ini</h6>
+                                                <h3>{{ $bimbinganMingguIni }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Status Bimbingan
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="stat-item mb-3">
+                                                <h6 class="text-muted">Menunggu Konfirmasi</h6>
+                                                <h3>{{ $menungguKonfirmasi }}</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="stat-item mb-3">
+                                                <h6 class="text-muted">Bimbingan Aktif</h6>
+                                                <h3>{{ $bimbinganAktif }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,6 +145,22 @@
         border-color: rgba(255, 255, 255, 0.6) !important;
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-item {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+    
+    .stat-item h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+    
+    .stat-item h6 {
+        margin-bottom: 5px;
     }
 </style>
 @endsection 

@@ -1,74 +1,75 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        Jadwal Bimbingan
-                    </h5>
-                    <a href="{{ route('jadwal.create') }}" class="btn btn-primary btn-custom">Tambah Jadwal</a>
+<div class="container py-5">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Jadwal Bimbingan</h4>
+            <a href="{{ route('jadwal-bimbingan.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Buat Jadwal Baru
+            </a>
+        </div>
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
                 </div>
+            @endif
 
-                <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Mahasiswa</th>
-                                    <th>Dosen</th>
-                                    <th>Tanggal</th>
-                                    <th>Waktu</th>
-                                    <th>Topik</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($jadwal as $key => $j)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $j->mahasiswa->nama }}</td>
-                                    <td>{{ $j->dosen->nama }}</td>
-                                    <td>{{ $j->tanggal }}</td>
-                                    <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
-                                    <td>{{ $j->topik }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $j->status)) }}">
-                                            {{ ucfirst($j->status) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('jadwal.show', $j->id) }}" class="btn btn-info btn-sm me-1">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('jadwal.edit', $j->id) }}" class="btn btn-warning btn-sm me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('jadwal.destroy', $j->id) }}" method="POST" class="d-inline">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Dosen</th>
+                            <th>Topik</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($jadwal as $j)
+                            <tr>
+                                <td>{{ $j->tanggal->format('d/m/Y') }}</td>
+                                <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
+                                <td>{{ $j->dosen->nama }}</td>
+                                <td>{{ $j->topik }}</td>
+                                <td>
+                                    @if($j->status == 'menunggu')
+                                        <span class="badge bg-warning">Menunggu</span>
+                                    @elseif($j->status == 'diterima')
+                                        <span class="badge bg-success">Diterima</span>
+                                    @elseif($j->status == 'ditolak')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @elseif($j->status == 'dibatalkan')
+                                        <span class="badge bg-secondary">Dibatalkan</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($j->status == 'menunggu')
+                                        <form action="{{ route('jadwal-bimbingan.cancel', $j->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                <i class="fas fa-trash"></i>
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin membatalkan jadwal ini?')">
+                                                <i class="fas fa-times me-1"></i>Batalkan
                                             </button>
                                         </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada jadwal bimbingan</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
