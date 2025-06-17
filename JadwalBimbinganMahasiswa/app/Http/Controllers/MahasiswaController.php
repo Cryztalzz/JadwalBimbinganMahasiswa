@@ -68,41 +68,15 @@ class MahasiswaController extends Controller
 
     public function dashboard()
     {
-        $mahasiswa = Mahasiswa::where('email', Auth::user()->email)->first();
-        
-        if (!$mahasiswa) {
-            return redirect()->route('login')->with('error', 'Data mahasiswa tidak ditemukan');
-        }
-
-        $jadwalBimbingan = JadwalBimbingan::with('dosen')
+        $mahasiswa = auth()->user()->mahasiswa;
+        $jadwalBimbingan = JadwalBimbingan::with(['dosen', 'penilaianMahasiswa'])
             ->where('nim', $mahasiswa->nim)
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        $totalJadwal = $jadwalBimbingan->count();
-        $jadwalHariIni = $jadwalBimbingan->where('tanggal', date('Y-m-d'))->count();
-        $jadwalMingguIni = $jadwalBimbingan->whereBetween('tanggal', [
-            now()->startOfWeek(),
-            now()->endOfWeek()
-        ])->count();
+        $dosen = Dosen::all();
 
-        $dosen = Dosen::whereNotNull('id_dosen')
-            ->whereNotNull('nama_dosen')
-            ->whereNotNull('nip')
-            ->get();
-        
-        if ($dosen->isEmpty()) {
-            return redirect()->back()->with('error', 'Tidak ada data dosen yang tersedia');
-        }
-
-        // Debug untuk memastikan data dosen valid
-        foreach ($dosen as $d) {
-            if (!$d->id_dosen || !$d->nama_dosen || !$d->nip) {
-                \Log::error('Data dosen tidak valid: ' . json_encode($d));
-            }
-        }
-
-        return view('mahasiswa.dashboard', compact('mahasiswa', 'jadwalBimbingan', 'totalJadwal', 'jadwalHariIni', 'jadwalMingguIni', 'dosen'));
+        return view('mahasiswa.dashboard', compact('jadwalBimbingan', 'dosen'));
     }
 
     public function jadwal()

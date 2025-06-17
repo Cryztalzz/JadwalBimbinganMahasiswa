@@ -6,7 +6,7 @@
         <div class="col-md-12 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h4 class="card-title mb-0">Selamat Datang, {{ $mahasiswa->nama }}</h4>
+                    <h4 class="card-title mb-0">Selamat Datang, {{ auth()->user()->mahasiswa->nama }}</h4>
                 </div>
             </div>
         </div>
@@ -19,7 +19,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-0">Total Jadwal</h6>
-                            <h2 class="mt-2 mb-0">{{ $totalJadwal }}</h2>
+                            <h2 class="mt-2 mb-0">{{ $jadwalBimbingan->count() }}</h2>
                         </div>
                         <div class="fs-1">
                             <i class="fas fa-calendar-alt"></i>
@@ -35,7 +35,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-0">Jadwal Hari Ini</h6>
-                            <h2 class="mt-2 mb-0">{{ $jadwalHariIni }}</h2>
+                            <h2 class="mt-2 mb-0">{{ $jadwalBimbingan->where('tanggal', date('Y-m-d'))->count() }}</h2>
                         </div>
                         <div class="fs-1">
                             <i class="fas fa-calendar-day"></i>
@@ -51,7 +51,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-0">Jadwal Minggu Ini</h6>
-                            <h2 class="mt-2 mb-0">{{ $jadwalMingguIni }}</h2>
+                            <h2 class="mt-2 mb-0">{{ $jadwalBimbingan->whereBetween('tanggal', [now()->startOfWeek(), now()->endOfWeek()])->count() }}</h2>
                         </div>
                         <div class="fs-1">
                             <i class="fas fa-calendar-week"></i>
@@ -81,30 +81,52 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
                                     <th>Dosen</th>
                                     <th>Topik</th>
                                     <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($jadwalBimbingan as $jadwal)
-                                <tr>
-                                    <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
-                                    <td>{{ $jadwal->dosen->nama_dosen }}</td>
-                                    <td>{{ $jadwal->topik }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $jadwal->status == 'menunggu_persetujuan' ? 'warning' : ($jadwal->status == 'disetujui' ? 'success' : ($jadwal->status == 'dibatalkan' ? 'secondary' : 'danger')) }}">
-                                            {{ $jadwal->status == 'menunggu_persetujuan' ? 'Menunggu Persetujuan' : ($jadwal->status == 'disetujui' ? 'Disetujui' : ($jadwal->status == 'dibatalkan' ? 'Dibatalkan' : 'Ditolak')) }}
-                                        </span>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
+                                        <td>{{ $jadwal->dosen->nama_dosen }}</td>
+                                        <td>{{ $jadwal->topik }}</td>
+                                        <td>
+                                            @if($jadwal->status === 'menunggu persetujuan')
+                                                <span class="badge bg-warning">Menunggu Persetujuan</span>
+                                            @elseif($jadwal->status === 'disetujui')
+                                                <span class="badge bg-success">Disetujui</span>
+                                            @elseif($jadwal->status === 'ditolak')
+                                                <span class="badge bg-danger">Ditolak</span>
+                                            @elseif($jadwal->status === 'selesai')
+                                                <span class="badge bg-info">Selesai</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($jadwal->status === 'selesai')
+                                                @if($jadwal->penilaianMahasiswa)
+                                                    <a href="{{ route('mahasiswa.penilaian.show', $jadwal->id_jadwal) }}" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye"></i> Lihat Penilaian
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('mahasiswa.penilaian.create', $jadwal->id_jadwal) }}" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-star"></i> Beri Penilaian
+                                                    </a>
+                                                @endif
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">Tidak ada jadwal bimbingan</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="7" class="text-center">Tidak ada jadwal bimbingan</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -123,7 +145,7 @@
                 <h5 class="modal-title" id="buatJadwalModalLabel">Buat Jadwal Bimbingan Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('mahasiswa.jadwal.store') }}" method="POST">
+            <form action="{{ route('jadwal-bimbingan.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -131,11 +153,9 @@
                         <select class="form-select @error('id_dosen') is-invalid @enderror" id="id_dosen" name="id_dosen" required>
                             <option value="">Pilih Dosen</option>
                             @foreach($dosen as $d)
-                                @if($d)
-                                    <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
-                                        {{ $d->nama_dosen }} ({{ $d->nip }})
-                                    </option>
-                                @endif
+                                <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
+                                    {{ $d->nama_dosen }} ({{ $d->nip }})
+                                </option>
                             @endforeach
                         </select>
                         @error('id_dosen')
@@ -166,14 +186,21 @@
                     </div>
                     <div class="mb-3">
                         <label for="waktu_selesai" class="form-label">Waktu Selesai</label>
-                        <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" id="waktu_selesai" name="waktu_selesai" value="{{ old('waktu_selesai') }}" required>
+                        <input type="time" class="form-control @error('waktu_selesai') is-invalid @enderror" 
+                            id="waktu_selesai" name="waktu_selesai" 
+                            value="{{ old('waktu_selesai', '10:00') }}"
+                            min="08:00" max="17:00"
+                            required>
                         @error('waktu_selesai')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-3">
                         <label for="topik" class="form-label">Topik Bimbingan</label>
-                        <input type="text" class="form-control @error('topik') is-invalid @enderror" id="topik" name="topik" value="{{ old('topik') }}" required>
+                        <input type="text" class="form-control @error('topik') is-invalid @enderror" 
+                            id="topik" name="topik" 
+                            value="{{ old('topik') }}" 
+                            required>
                         @error('topik')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

@@ -51,7 +51,7 @@
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="fas fa-lock text-primary"></i>
                                 </span>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required placeholder="Masukkan password">
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                     <i class="fas fa-eye"></i>
                                 </button>

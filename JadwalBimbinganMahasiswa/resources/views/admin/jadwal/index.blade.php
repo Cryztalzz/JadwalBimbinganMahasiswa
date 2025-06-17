@@ -53,9 +53,19 @@
                                     <td>{{ $j->mahasiswa->jurusan }}</td>
                                     <td>{{ $j->topik }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $j->status == 'menunggu_persetujuan' ? 'warning' : ($j->status == 'disetujui' ? 'success' : 'danger') }}">
-                                            {{ str_replace('_', ' ', ucfirst($j->status)) }}
-                                        </span>
+                                        @if($j->status == 'menunggu_persetujuan')
+                                            <span class="badge bg-warning">Menunggu Persetujuan</span>
+                                        @elseif($j->status == 'disetujui')
+                                            <span class="badge bg-success">Disetujui</span>
+                                        @elseif($j->status == 'ditolak')
+                                            <span class="badge bg-danger">Ditolak</span>
+                                        @elseif($j->status == 'dibatalkan')
+                                            <span class="badge bg-secondary">Dibatalkan</span>
+                                        @elseif($j->status == 'selesai')
+                                            <span class="badge bg-info">Selesai</span>
+                                        @else
+                                            <span class="badge bg-dark">{{ ucfirst($j->status) }}</span>
+                                        @endif
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ route('admin.jadwal.edit', $j->id_jadwal) }}" class="btn btn-sm btn-warning">

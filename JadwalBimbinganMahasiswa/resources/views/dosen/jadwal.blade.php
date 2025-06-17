@@ -31,7 +31,7 @@
                                 <tr>
                                     <td>{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($j->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($j->waktu_selesai)->format('H:i') }}</td>
-                                    <td>{{ $j->mahasiswa->nama }}</td>
+                                    <td>{{ $j->mahasiswa->nama }} ({{ $j->mahasiswa->nim }})</td>
                                     <td>{{ $j->mahasiswa->jurusan }}</td>
                                     <td>{{ $j->topik }}</td>
                                     <td>
@@ -39,38 +39,54 @@
                                             <span class="badge bg-warning">Menunggu Persetujuan</span>
                                         @elseif($j->status == 'disetujui')
                                             <span class="badge bg-success">Disetujui</span>
+                                        @elseif($j->status == 'ditolak')
+                                            <span class="badge bg-danger">Ditolak</span>
                                         @elseif($j->status == 'dibatalkan')
                                             <span class="badge bg-secondary">Dibatalkan</span>
+                                        @elseif($j->status == 'selesai')
+                                            <span class="badge bg-info">Selesai</span>
                                         @else
-                                            <span class="badge bg-danger">Ditolak</span>
+                                            <span class="badge bg-dark">{{ ucfirst($j->status) }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($j->status == 'menunggu_persetujuan')
-                                            <form action="{{ route('dosen.jadwal.update', ['id' => $j->id_jadwal]) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('dosen.jadwal.approve', $j->id_jadwal) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="disetujui">
-                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Apakah Anda yakin ingin menyetujui jadwal bimbingan ini?')">
-                                                    <i class="fas fa-check"></i> Setujui
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check me-1"></i>Setujui
                                                 </button>
                                             </form>
-                                            <form action="{{ route('dosen.jadwal.update', ['id' => $j->id_jadwal]) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('dosen.jadwal.reject', $j->id_jadwal) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="ditolak">
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menolak jadwal bimbingan ini?')">
-                                                    <i class="fas fa-times"></i> Tolak
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menolak jadwal ini?')">
+                                                    <i class="fas fa-times me-1"></i>Tolak
                                                 </button>
                                             </form>
-                                        @else
-                                            <span class="text-muted">Tidak ada aksi</span>
+                                        @endif
+                                        @if($j->status == 'disetujui')
+                                            <form action="{{ route('jadwal-bimbingan.mark-as-selesai', $j->id_jadwal) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Apakah Anda yakin ingin menandai jadwal ini sebagai selesai?')">
+                                                    <i class="fas fa-check me-1"></i>Tandai Selesai
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($j->status == 'selesai' && !$j->penilaianBimbingan)
+                                            <a href="{{ route('penilaian.create', $j->id_jadwal) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-star me-1"></i>Beri Penilaian
+                                            </a>
+                                        @endif
+                                        @if($j->penilaianBimbingan)
+                                            <a href="{{ route('penilaian.show', $j->id_jadwal) }}" class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye me-1"></i>Lihat Penilaian
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada jadwal bimbingan</td>
+                                    <td colspan="7" class="text-center">Tidak ada jadwal bimbingan</td>
                                 </tr>
                                 @endforelse
                             </tbody>

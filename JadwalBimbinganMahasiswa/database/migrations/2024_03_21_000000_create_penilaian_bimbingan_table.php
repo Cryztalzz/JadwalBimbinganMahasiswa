@@ -6,22 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('penilaian_bimbingan', function (Blueprint $table) {
             $table->id('id_penilaian');
             $table->foreignId('id_jadwal')->constrained('jadwal_bimbingan', 'id_jadwal')->onDelete('cascade');
-            $table->text('catatan_bimbingan');
-            $table->integer('nilai_kehadiran')->comment('1-5');
-            $table->integer('nilai_kesiapan')->comment('1-5');
-            $table->integer('nilai_kemajuan')->comment('1-5');
-            $table->text('feedback')->nullable();
-            $table->text('rencana_tindak_lanjut')->nullable();
+            $table->string('aktivitas_mahasiswa');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('penilaian_bimbingan');
     }

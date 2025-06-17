@@ -28,7 +28,7 @@ return new class extends Migration
 
         DB::table('jadwal_bimbingan')
             ->where('status', 'selesai')
-            ->update(['status' => 'disetujui']);
+            ->update(['status' => 'selesai']);
     }
 
     /**
@@ -42,7 +42,7 @@ return new class extends Migration
             ->update(['status' => 'tersedia']);
 
         DB::table('jadwal_bimbingan')
-            ->where('status', 'disetujui')
+            ->where('status', 'selesai')
             ->update(['status' => 'selesai']);
 
         // Kembalikan tipe data kolom status

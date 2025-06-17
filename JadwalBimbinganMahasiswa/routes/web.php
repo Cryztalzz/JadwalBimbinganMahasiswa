@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\JadwalBimbinganController;
 use App\Http\Controllers\PenilaianBimbinganController;
+use App\Http\Controllers\PenilaianMahasiswaController;
 
 // Route untuk autentikasi
 Route::get('/', function () {
@@ -53,6 +54,9 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::get('/jadwal/{id}/edit', [DosenController::class, 'jadwalEdit'])->name('jadwal.edit');
     Route::put('/jadwal/{id}', [DosenController::class, 'jadwalUpdate'])->name('jadwal.update');
     Route::delete('/jadwal/{id}', [DosenController::class, 'jadwalDestroy'])->name('jadwal.destroy');
+    Route::post('/jadwal/{id}/approve', [DosenController::class, 'approveJadwal'])->name('jadwal.approve');
+    Route::post('/jadwal/{id}/reject', [DosenController::class, 'rejectJadwal'])->name('jadwal.reject');
+    Route::post('/jadwal/{id}/complete', [DosenController::class, 'completeJadwal'])->name('jadwal.complete');
 });
 
 // Route untuk Mahasiswa
@@ -119,17 +123,27 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     Route::get('/jadwal-bimbingan/create', [JadwalBimbinganController::class, 'create'])->name('jadwal-bimbingan.create');
     Route::post('/jadwal-bimbingan', [JadwalBimbinganController::class, 'store'])->name('jadwal-bimbingan.store');
     Route::post('/jadwal-bimbingan/{id}/cancel', [JadwalBimbinganController::class, 'cancel'])->name('jadwal-bimbingan.cancel');
+    Route::get('/jadwal-bimbingan/{id}', [JadwalBimbinganController::class, 'show'])->name('jadwal-bimbingan.show');
+    
+    // Route untuk penilaian mahasiswa
+    Route::get('/mahasiswa/penilaian/{id_jadwal}/create', [PenilaianMahasiswaController::class, 'create'])->name('mahasiswa.penilaian.create');
+    Route::post('/mahasiswa/penilaian/{id_jadwal}', [PenilaianMahasiswaController::class, 'store'])->name('mahasiswa.penilaian.store');
+    Route::get('/mahasiswa/penilaian/{id_jadwal}', [PenilaianMahasiswaController::class, 'show'])->name('mahasiswa.penilaian.show');
+});
+
+Route::middleware(['auth', 'role:dosen'])->group(function () {
+    Route::post('/jadwal-bimbingan/{id}/mark-as-selesai', [JadwalBimbinganController::class, 'markAsSelesai'])->name('jadwal-bimbingan.mark-as-selesai');
+    Route::get('/penilaian/{id_jadwal}/create', [PenilaianBimbinganController::class, 'create'])->name('penilaian.create');
+    Route::post('/penilaian/{id_jadwal}', [PenilaianBimbinganController::class, 'store'])->name('penilaian.store');
 });
 
 // Penilaian Bimbingan Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/penilaian/riwayat', [PenilaianBimbinganController::class, 'riwayat'])->name('penilaian.riwayat');
     Route::get('/penilaian/{id_jadwal}', [PenilaianBimbinganController::class, 'show'])->name('penilaian.show');
-});
-
-Route::middleware(['auth', 'role:dosen'])->group(function () {
-    Route::get('/penilaian/{id_jadwal}/create', [PenilaianBimbinganController::class, 'create'])->name('penilaian.create');
-    Route::post('/penilaian/{id_jadwal}', [PenilaianBimbinganController::class, 'store'])->name('penilaian.store');
+    Route::get('/penilaian/create/{id_jadwal}', [PenilaianBimbinganController::class, 'create'])->name('penilaian.create');
+    Route::post('/penilaian/store/{id_jadwal}', [PenilaianBimbinganController::class, 'store'])->name('penilaian.store');
+    Route::get('/penilaian/show/{id_jadwal}', [PenilaianBimbinganController::class, 'show'])->name('penilaian.show');
 });
 
 Route::get('/calendar', function () {

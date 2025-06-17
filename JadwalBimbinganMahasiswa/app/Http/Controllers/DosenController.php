@@ -139,4 +139,52 @@ class DosenController extends BaseController
         return redirect()->route('dosen.jadwal')
             ->with('success', 'Jadwal berhasil dihapus');
     }
+
+    public function approveJadwal($id)
+    {
+        $jadwal = JadwalBimbingan::findOrFail($id);
+        
+        // Pastikan hanya dosen yang terkait yang bisa menyetujui
+        if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menyetujui jadwal ini');
+        }
+
+        $jadwal->update(['status' => 'disetujui']);
+        return redirect()->back()->with('success', 'Jadwal bimbingan berhasil disetujui');
+    }
+
+    public function rejectJadwal($id)
+    {
+        $jadwal = JadwalBimbingan::findOrFail($id);
+        
+        // Pastikan hanya dosen yang terkait yang bisa menolak
+        if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menolak jadwal ini');
+        }
+
+        $jadwal->update(['status' => 'ditolak']);
+        return redirect()->back()->with('success', 'Jadwal bimbingan berhasil ditolak');
+    }
+
+    public function completeJadwal($id)
+    {
+        $jadwal = JadwalBimbingan::findOrFail($id);
+        
+        // Pastikan hanya dosen yang terkait yang bisa menandai selesai
+        if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menandai jadwal ini');
+        }
+
+        // Pastikan jadwal sudah disetujui
+        if ($jadwal->status !== 'disetujui') {
+            return redirect()->back()->with('error', 'Jadwal harus disetujui terlebih dahulu');
+        }
+
+        try {
+            $jadwal->update(['status' => 'selesai']);
+            return redirect()->back()->with('success', 'Jadwal bimbingan berhasil ditandai selesai');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menandai jadwal sebagai selesai');
+        }
+    }
 } 

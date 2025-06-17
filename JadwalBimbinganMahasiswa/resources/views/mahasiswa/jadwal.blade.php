@@ -42,9 +42,9 @@
                     <tbody>
                         @forelse($jadwal as $j)
                             <tr>
-                                <td>{{ $j->tanggal->format('d/m/Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($j->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($j->waktu_selesai)->format('H:i') }}</td>
-                                <td>{{ $j->dosen->nama_dosen ?? '-' }}</td>
+                                <td>{{ $j->dosen->nama_dosen }}</td>
                                 <td>{{ $j->topik }}</td>
                                 <td>
                                     @if($j->status == 'menunggu_persetujuan')
@@ -55,8 +55,10 @@
                                         <span class="badge bg-danger">Ditolak</span>
                                     @elseif($j->status == 'dibatalkan')
                                         <span class="badge bg-secondary">Dibatalkan</span>
+                                    @elseif($j->status == 'selesai')
+                                        <span class="badge bg-info">Selesai</span>
                                     @else
-                                        <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $j->status ?? 'Tidak Diketahui')) }}</span>
+                                        <span class="badge bg-dark">{{ ucfirst($j->status) }}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -67,6 +69,16 @@
                                                 <i class="fas fa-times me-1"></i>Batalkan
                                             </button>
                                         </form>
+                                    @endif
+                                    @if($j->status == 'selesai' && !$j->penilaianMahasiswa)
+                                        <a href="{{ route('mahasiswa.penilaian.create', $j->id_jadwal) }}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-star me-1"></i>Beri Penilaian
+                                        </a>
+                                    @endif
+                                    @if($j->penilaianMahasiswa)
+                                        <a href="{{ route('mahasiswa.penilaian.show', $j->id_jadwal) }}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye me-1"></i>Lihat Penilaian
+                                        </a>
                                     @endif
                                 </td>
                             </tr>

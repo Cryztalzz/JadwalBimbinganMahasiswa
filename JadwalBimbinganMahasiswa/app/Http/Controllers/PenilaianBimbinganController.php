@@ -11,11 +11,17 @@ class PenilaianBimbinganController extends Controller
 {
     public function create($id_jadwal)
     {
-        $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen'])->findOrFail($id_jadwal);
+        $jadwal = JadwalBimbingan::with(['dosen', 'mahasiswa'])
+            ->findOrFail($id_jadwal);
         
-        // Pastikan hanya dosen yang terkait yang bisa memberikan penilaian
-        if (Auth::user()->email !== $jadwal->dosen->email) {
-            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk memberikan penilaian');
+        // Cek apakah jadwal sudah selesai
+        if ($jadwal->status !== 'selesai') {
+            return redirect()->back()->with('error', 'Jadwal bimbingan belum selesai');
+        }
+
+        // Cek apakah sudah ada penilaian
+        if ($jadwal->penilaianBimbingan) {
+            return redirect()->back()->with('error', 'Penilaian sudah dilakukan');
         }
 
         return view('penilaian.create', compact('jadwal'));
@@ -24,43 +30,45 @@ class PenilaianBimbinganController extends Controller
     public function store(Request $request, $id_jadwal)
     {
         $request->validate([
-            'catatan_bimbingan' => 'required|string',
-            'nilai_kehadiran' => 'required|integer|min:1|max:5',
-            'nilai_kesiapan' => 'required|integer|min:1|max:5',
-            'nilai_kemajuan' => 'required|integer|min:1|max:5',
-            'feedback' => 'nullable|string',
-            'rencana_tindak_lanjut' => 'nullable|string'
+            'aktivitas_mahasiswa' => 'required|string',
+            'keterangan' => 'nullable|string'
         ]);
 
         $jadwal = JadwalBimbingan::findOrFail($id_jadwal);
-        
+
         // Pastikan hanya dosen yang terkait yang bisa memberikan penilaian
-        if (Auth::user()->email !== $jadwal->dosen->email) {
+        if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk memberikan penilaian');
+        }
+
+        // Pastikan jadwal sudah selesai
+        if ($jadwal->status !== 'selesai') {
+            return redirect()->back()->with('error', 'Jadwal harus selesai terlebih dahulu');
+        }
+
+        // Pastikan belum ada penilaian
+        if ($jadwal->penilaianBimbingan) {
+            return redirect()->back()->with('error', 'Penilaian sudah diberikan');
         }
 
         PenilaianBimbingan::create([
             'id_jadwal' => $id_jadwal,
-            'catatan_bimbingan' => $request->catatan_bimbingan,
-            'nilai_kehadiran' => $request->nilai_kehadiran,
-            'nilai_kesiapan' => $request->nilai_kesiapan,
-            'nilai_kemajuan' => $request->nilai_kemajuan,
-            'feedback' => $request->feedback,
-            'rencana_tindak_lanjut' => $request->rencana_tindak_lanjut
+            'aktivitas_mahasiswa' => $request->aktivitas_mahasiswa,
+            'keterangan' => $request->keterangan
         ]);
 
-        // Update status jadwal menjadi selesai
-        $jadwal->update(['status' => 'selesai']);
-
-        return redirect()->route('dosen.jadwal')
-            ->with('success', 'Penilaian bimbingan berhasil disimpan');
+        return redirect()->back()->with('success', 'Penilaian berhasil disimpan');
     }
 
     public function show($id_jadwal)
     {
         $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen', 'penilaianBimbingan'])
             ->findOrFail($id_jadwal);
-        
+
+        if (!$jadwal->penilaianBimbingan) {
+            return redirect()->back()->with('error', 'Penilaian belum diberikan');
+        }
+
         return view('penilaian.show', compact('jadwal'));
     }
 

@@ -14,12 +14,12 @@ class PenilaianBimbingan extends Model
 
     protected $fillable = [
         'id_jadwal',
-        'catatan_bimbingan',
-        'nilai_kehadiran',
-        'nilai_kesiapan',
-        'nilai_kemajuan',
-        'feedback',
-        'rencana_tindak_lanjut'
+        'aktivitas_mahasiswa',
+        'keterangan'
+    ];
+
+    protected $casts = [
+        'tanggal_penilaian' => 'date',
     ];
 
     public function jadwalBimbingan()

@@ -53,18 +53,23 @@ class JadwalBimbinganController extends Controller
             return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
         }
 
-        JadwalBimbingan::create([
-            'nim' => $mahasiswa->nim,
-            'id_dosen' => $request->dosen_id,
-            'tanggal' => $request->tanggal,
-            'waktu_mulai' => $request->waktu_mulai,
-            'waktu_selesai' => $request->waktu_selesai,
-            'topik' => $request->topik,
-            'status' => 'menunggu_persetujuan'
-        ]);
+        try {
+            JadwalBimbingan::create([
+                'nim' => $mahasiswa->nim,
+                'id_dosen' => $request->dosen_id,
+                'tanggal' => $request->tanggal,
+                'waktu_mulai' => $request->waktu_mulai,
+                'waktu_selesai' => $request->waktu_selesai,
+                'topik' => $request->topik,
+                'status' => JadwalBimbingan::STATUS_MENUNGGU
+            ]);
 
-        return redirect()->route('jadwal-bimbingan.index')
-            ->with('success', 'Jadwal bimbingan berhasil dibuat');
+            return redirect()->route('jadwal-bimbingan.index')
+                ->with('success', 'Jadwal bimbingan berhasil dibuat');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat membuat jadwal bimbingan: ' . $e->getMessage());
+        }
     }
 
     public function cancel($id)
@@ -90,7 +95,41 @@ class JadwalBimbinganController extends Controller
 
     public function show($id)
     {
-        $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen', 'penilaian'])->findOrFail($id);
-        return view('jadwal.show', compact('jadwal'));
+        $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen', 'penilaianBimbingan'])
+            ->findOrFail($id);
+
+        // Pastikan hanya mahasiswa yang terkait yang bisa melihat detail
+        if (auth()->user()->role === 'mahasiswa' && $jadwal->id_mahasiswa != auth()->user()->mahasiswa->id_mahasiswa) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk melihat jadwal ini');
+        }
+
+        return view('mahasiswa.jadwal.show', compact('jadwal'));
+    }
+
+    public function markAsSelesai($id)
+    {
+        try {
+            $jadwal = JadwalBimbingan::findOrFail($id);
+            
+            // Pastikan hanya dosen yang terkait yang bisa menandai selesai
+            if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
+                return redirect()->back()
+                    ->with('error', 'Anda tidak memiliki akses untuk menandai jadwal ini');
+            }
+
+            // Pastikan jadwal sudah disetujui
+            if ($jadwal->status !== JadwalBimbingan::STATUS_DISETUJUI) {
+                return redirect()->back()
+                    ->with('error', 'Jadwal harus disetujui terlebih dahulu');
+            }
+
+            $jadwal->update(['status' => JadwalBimbingan::STATUS_SELESAI]);
+            
+            return redirect()->back()
+                ->with('success', 'Jadwal bimbingan berhasil ditandai sebagai selesai');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat mengubah status: ' . $e->getMessage());
+        }
     }
 } 

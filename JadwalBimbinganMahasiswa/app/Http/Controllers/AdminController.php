@@ -409,21 +409,27 @@ class AdminController extends Controller
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required|after:waktu_mulai',
             'topik' => 'required|string|max:255',
-            'status' => 'required|in:menunggu_persetujuan,disetujui,ditolak'
+            'status' => 'required|in:menunggu_persetujuan,disetujui,ditolak,dibatalkan,selesai'
         ]);
 
-        $jadwal->update([
-            'id_dosen' => $request->id_dosen,
-            'nim' => $request->nim,
-            'tanggal' => $request->tanggal,
-            'waktu_mulai' => $request->waktu_mulai,
-            'waktu_selesai' => $request->waktu_selesai,
-            'topik' => $request->topik,
-            'status' => $request->status
-        ]);
+        try {
+            $jadwal->update([
+                'id_dosen' => $request->id_dosen,
+                'nim' => $request->nim,
+                'tanggal' => $request->tanggal,
+                'waktu_mulai' => $request->waktu_mulai,
+                'waktu_selesai' => $request->waktu_selesai,
+                'topik' => $request->topik,
+                'status' => $request->status
+            ]);
 
-        return redirect()->route('admin.jadwal.index')
-            ->with('success', 'Jadwal bimbingan berhasil diperbarui');
+            return redirect()->route('admin.jadwal.index')
+                ->with('success', 'Jadwal bimbingan berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat memperbarui jadwal: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function jadwalDestroy($id)
