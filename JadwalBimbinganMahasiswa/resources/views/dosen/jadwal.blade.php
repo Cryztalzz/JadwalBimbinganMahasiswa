@@ -20,6 +20,8 @@
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
                                     <th>Mahasiswa</th>
+                                    <th>Jurusan</th>
+                                    <th>Topik</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -30,11 +32,15 @@
                                     <td>{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($j->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($j->waktu_selesai)->format('H:i') }}</td>
                                     <td>{{ $j->mahasiswa->nama }}</td>
+                                    <td>{{ $j->mahasiswa->jurusan }}</td>
+                                    <td>{{ $j->topik }}</td>
                                     <td>
                                         @if($j->status == 'menunggu_persetujuan')
                                             <span class="badge bg-warning">Menunggu Persetujuan</span>
                                         @elseif($j->status == 'disetujui')
                                             <span class="badge bg-success">Disetujui</span>
+                                        @elseif($j->status == 'dibatalkan')
+                                            <span class="badge bg-secondary">Dibatalkan</span>
                                         @else
                                             <span class="badge bg-danger">Ditolak</span>
                                         @endif
@@ -64,7 +70,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Tidak ada jadwal bimbingan</td>
+                                    <td colspan="6" class="text-center">Tidak ada jadwal bimbingan</td>
                                 </tr>
                                 @endforelse
                             </tbody>

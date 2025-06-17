@@ -72,7 +72,12 @@ class DosenController extends BaseController
 
     public function dashboard()
     {
-        $dosen = Dosen::where('id_dosen', Auth::user()->id)->first();
+        $dosen = Dosen::where('email', Auth::user()->email)->first();
+        
+        if (!$dosen) {
+            return redirect()->route('login')->with('error', 'Data dosen tidak ditemukan');
+        }
+
         $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen'])
             ->where('id_dosen', $dosen->id_dosen)
             ->orderBy('tanggal', 'desc')
@@ -90,7 +95,12 @@ class DosenController extends BaseController
 
     public function jadwal()
     {
-        $dosen = Dosen::where('id_dosen', Auth::user()->id)->first();
+        $dosen = Dosen::where('email', Auth::user()->email)->first();
+        
+        if (!$dosen) {
+            return redirect()->route('login')->with('error', 'Data dosen tidak ditemukan');
+        }
+
         $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen'])
             ->where('id_dosen', $dosen->id_dosen)
             ->orderBy('tanggal', 'desc')

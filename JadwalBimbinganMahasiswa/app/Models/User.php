@@ -35,6 +35,6 @@ class User extends Authenticatable
 
     public function dosen()
     {
-        return $this->hasOne(Dosen::class, 'nip', 'username');
+        return $this->hasOne(Dosen::class, 'email', 'email');
     }
 }

@@ -86,7 +86,21 @@ class MahasiswaController extends Controller
             now()->endOfWeek()
         ])->count();
 
-        $dosen = Dosen::all();
+        $dosen = Dosen::whereNotNull('id_dosen')
+            ->whereNotNull('nama_dosen')
+            ->whereNotNull('nip')
+            ->get();
+        
+        if ($dosen->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada data dosen yang tersedia');
+        }
+
+        // Debug untuk memastikan data dosen valid
+        foreach ($dosen as $d) {
+            if (!$d->id_dosen || !$d->nama_dosen || !$d->nip) {
+                \Log::error('Data dosen tidak valid: ' . json_encode($d));
+            }
+        }
 
         return view('mahasiswa.dashboard', compact('mahasiswa', 'jadwalBimbingan', 'totalJadwal', 'jadwalHariIni', 'jadwalMingguIni', 'dosen'));
     }

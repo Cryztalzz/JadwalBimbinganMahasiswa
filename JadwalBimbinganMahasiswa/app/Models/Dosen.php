@@ -16,6 +16,7 @@ class Dosen extends Model
     protected $fillable = [
         'id_dosen',
         'nama_dosen',
+        'email',
         'nip',
         'password',
         'notelp'
@@ -23,7 +24,7 @@ class Dosen extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_dosen', 'id');
+        return $this->belongsTo(User::class, 'email', 'email');
     }
 
     public function jadwalBimbingan()

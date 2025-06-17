@@ -44,7 +44,7 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $d->nama_dosen }}</td>
-                                    <td>{{ $d->user->email }}</td>
+                                    <td>{{ $d->email }}</td>
                                     <td>{{ $d->nip }}</td>
                                     <td>{{ $d->notelp }}</td>
                                     <td class="text-center">

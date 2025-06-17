@@ -18,7 +18,9 @@ class Mahasiswa extends Model
         'nama',
         'email',
         'password',
-        'notelp'
+        'notelp',
+        'jurusan',
+        'angkatan'
     ];
 
     public function user()

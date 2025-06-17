@@ -44,6 +44,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Mahasiswa</th>
+                                    <th>Jurusan</th>
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
                                     <th>Status</th>
@@ -54,6 +55,7 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $jadwal->mahasiswa->nama }}</td>
+                                    <td>{{ $jadwal->mahasiswa->jurusan }}</td>
                                     <td>{{ $jadwal->tanggal }}</td>
                                     <td>{{ $jadwal->waktu_mulai }} - {{ $jadwal->waktu_selesai }}</td>
                                     <td>

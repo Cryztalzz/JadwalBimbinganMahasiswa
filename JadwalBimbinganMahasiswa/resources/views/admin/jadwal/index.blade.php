@@ -36,6 +36,7 @@
                                     <th>Waktu</th>
                                     <th>Dosen</th>
                                     <th>Mahasiswa</th>
+                                    <th>Jurusan</th>
                                     <th>Topik</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
@@ -49,6 +50,7 @@
                                     <td>{{ \Carbon\Carbon::parse($j->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($j->waktu_selesai)->format('H:i') }}</td>
                                     <td>{{ $j->dosen->nama_dosen }}</td>
                                     <td>{{ $j->mahasiswa->nama }}</td>
+                                    <td>{{ $j->mahasiswa->jurusan }}</td>
                                     <td>{{ $j->topik }}</td>
                                     <td>
                                         <span class="badge bg-{{ $j->status == 'menunggu_persetujuan' ? 'warning' : ($j->status == 'disetujui' ? 'success' : 'danger') }}">

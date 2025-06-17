@@ -131,9 +131,11 @@
                         <select class="form-select @error('id_dosen') is-invalid @enderror" id="id_dosen" name="id_dosen" required>
                             <option value="">Pilih Dosen</option>
                             @foreach($dosen as $d)
-                                <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
-                                    {{ $d->nama_dosen }} ({{ $d->nip }})
-                                </option>
+                                @if($d)
+                                    <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
+                                        {{ $d->nama_dosen }} ({{ $d->nip }})
+                                    </option>
+                                @endif
                             @endforeach
                         </select>
                         @error('id_dosen')

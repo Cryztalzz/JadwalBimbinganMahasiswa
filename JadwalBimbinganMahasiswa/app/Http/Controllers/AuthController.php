@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Dosen;
 
 class AuthController extends Controller
 {
@@ -25,6 +26,18 @@ class AuthController extends Controller
         // Coba login dengan username
         if (Auth::attempt(['username' => $login, 'password' => $password])) {
             $user = Auth::user();
+            
+            // Verifikasi bahwa user adalah dosen yang benar
+            if ($user->role === 'dosen') {
+                $dosen = Dosen::where('email', $user->email)->first();
+                if (!$dosen) {
+                    Auth::logout();
+                    return back()->withErrors([
+                        'login' => 'Data dosen tidak ditemukan.',
+                    ])->onlyInput('login');
+                }
+            }
+            
             $request->session()->regenerate();
 
             // Redirect berdasarkan role
@@ -46,6 +59,18 @@ class AuthController extends Controller
         // Coba login dengan email
         if (Auth::attempt(['email' => $login, 'password' => $password])) {
             $user = Auth::user();
+            
+            // Verifikasi bahwa user adalah dosen yang benar
+            if ($user->role === 'dosen') {
+                $dosen = Dosen::where('email', $user->email)->first();
+                if (!$dosen) {
+                    Auth::logout();
+                    return back()->withErrors([
+                        'login' => 'Data dosen tidak ditemukan.',
+                    ])->onlyInput('login');
+                }
+            }
+            
             $request->session()->regenerate();
 
             // Redirect berdasarkan role

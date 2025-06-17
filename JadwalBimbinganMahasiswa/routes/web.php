@@ -11,6 +11,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\JadwalBimbinganController;
+use App\Http\Controllers\PenilaianBimbinganController;
 
 // Route untuk autentikasi
 Route::get('/', function () {
@@ -119,3 +120,18 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     Route::post('/jadwal-bimbingan', [JadwalBimbinganController::class, 'store'])->name('jadwal-bimbingan.store');
     Route::post('/jadwal-bimbingan/{id}/cancel', [JadwalBimbinganController::class, 'cancel'])->name('jadwal-bimbingan.cancel');
 });
+
+// Penilaian Bimbingan Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/penilaian/riwayat', [PenilaianBimbinganController::class, 'riwayat'])->name('penilaian.riwayat');
+    Route::get('/penilaian/{id_jadwal}', [PenilaianBimbinganController::class, 'show'])->name('penilaian.show');
+});
+
+Route::middleware(['auth', 'role:dosen'])->group(function () {
+    Route::get('/penilaian/{id_jadwal}/create', [PenilaianBimbinganController::class, 'create'])->name('penilaian.create');
+    Route::post('/penilaian/{id_jadwal}', [PenilaianBimbinganController::class, 'store'])->name('penilaian.store');
+});
+
+Route::get('/calendar', function () {
+    return view('calendar');
+})->name('calendar');

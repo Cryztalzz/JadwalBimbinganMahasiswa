@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -57,37 +59,79 @@ class AdminController extends Controller
 
     public function dosenStore(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'nip' => 'required|string|unique:dosen',
-            'notelp' => 'required|string|max:20'
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'nip' => 'required|numeric|unique:dosen',
+                'notelp' => 'required|numeric|digits_between:10,15|regex:/^08[0-9]{8,13}$/'
+            ]);
 
-        // Generate username dari email
-        $username = explode('@', $request->email)[0];
+            DB::beginTransaction();
+            try {
+                // Generate username dari email
+                $username = explode('@', $request->email)[0];
 
-        // Buat user baru
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'dosen'
-        ]);
+                // Buat user baru
+                $user = User::create([
+                    'name' => $request->name,
+                    'username' => $username,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => 'dosen'
+                ]);
 
-        // Buat data dosen
-        Dosen::create([
-            'id_dosen' => $user->id,
-            'nama_dosen' => $request->name,
-            'nip' => $request->nip,
-            'password' => Hash::make($request->password),
-            'notelp' => $request->notelp
-        ]);
+                // Buat data dosen
+                Dosen::create([
+                    'nama_dosen' => $request->name,
+                    'nip' => $request->nip,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'notelp' => $request->notelp
+                ]);
 
-        return redirect()->route('admin.dosen.index')
-            ->with('success', 'Dosen berhasil ditambahkan');
+                DB::commit();
+                return redirect()->route('admin.dosen.index')
+                    ->with('success', 'Dosen berhasil ditambahkan');
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Error creating dosen: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                    'request' => $request->all()
+                ]);
+                
+                // Cek apakah error karena duplikasi
+                if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                    if (str_contains($e->getMessage(), 'users_username_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Username sudah digunakan. Silakan gunakan email yang berbeda.');
+                    } elseif (str_contains($e->getMessage(), 'users_email_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Email sudah digunakan. Silakan gunakan email yang berbeda.');
+                    } elseif (str_contains($e->getMessage(), 'dosen_nip_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'NIP sudah digunakan. Silakan gunakan NIP yang berbeda.');
+                    }
+                }
+                
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            Log::error('Error in dosenStore: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     // Edit dan Delete Dosen
@@ -127,7 +171,8 @@ class AdminController extends Controller
         $dosen->update([
             'nama_dosen' => $request->name,
             'nip' => $request->nip,
-            'notelp' => $request->notelp
+            'notelp' => $request->notelp,
+            'email' => $request->email
         ]);
 
         // Update password dosen jika diisi
@@ -166,39 +211,80 @@ class AdminController extends Controller
 
     public function mahasiswaStore(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'nim' => 'required|string|unique:mahasiswa',
-            'jurusan' => 'required|string|max:100',
-            'angkatan' => 'required|integer|min:2000|max:' . (date('Y') + 1),
-            'notelp' => 'required|string|max:20'
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'nim' => 'required|numeric|unique:mahasiswa|digits_between:8,15',
+                'jurusan' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
+                'angkatan' => 'required|integer|min:2000|max:' . (date('Y') + 1),
+                'notelp' => 'required|numeric|digits_between:10,15|regex:/^08[0-9]{8,13}$/'
+            ]);
 
-        // Generate username dari email
-        $username = explode('@', $request->email)[0];
+            DB::beginTransaction();
+            try {
+                // Generate username dari email
+                $username = explode('@', $request->email)[0];
 
-        // Buat user baru
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'mahasiswa'
-        ]);
+                // Buat user baru
+                $user = User::create([
+                    'name' => $request->name,
+                    'username' => $username,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => 'mahasiswa'
+                ]);
 
-        // Buat data mahasiswa
-        Mahasiswa::create([
-            'nim' => $request->nim,
-            'nama' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'notelp' => $request->notelp
-        ]);
+                // Buat data mahasiswa
+                Mahasiswa::create([
+                    'nim' => $request->nim,
+                    'nama' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'jurusan' => $request->jurusan,
+                    'angkatan' => $request->angkatan,
+                    'notelp' => $request->notelp
+                ]);
 
-        return redirect()->route('admin.mahasiswa.index')
-            ->with('success', 'Mahasiswa berhasil ditambahkan');
+                DB::commit();
+                return redirect()->route('admin.mahasiswa.index')
+                    ->with('success', 'Mahasiswa berhasil ditambahkan');
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Error creating mahasiswa: ' . $e->getMessage());
+                
+                // Cek apakah error karena duplikasi
+                if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                    if (str_contains($e->getMessage(), 'users_username_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Username sudah digunakan. Silakan gunakan email yang berbeda.');
+                    } elseif (str_contains($e->getMessage(), 'users_email_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Email sudah digunakan. Silakan gunakan email yang berbeda.');
+                    } elseif (str_contains($e->getMessage(), 'mahasiswa_nim_unique')) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'NIM sudah digunakan. Silakan gunakan NIM yang berbeda.');
+                    }
+                }
+                
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            Log::error('Error in mahasiswaStore: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     // Edit dan Delete Mahasiswa
