@@ -7,7 +7,7 @@
 
 <div align="center">
 
-![Banner](public/images/welcome.png)
+![Banner](JadwalBimbinganMahasiswa/public/images/welcome.png)
 
 Aplikasi berbasis web untuk mengatur dan mengelola **jadwal bimbingan mahasiswa** antara dosen dan mahasiswa secara terstruktur dan efisien. Dibuat sebagai solusi digital untuk memudahkan pengaturan jadwal dan dokumentasi proses bimbingan.
 
@@ -128,19 +128,19 @@ resources/
 
 <div align="center">
 
-![Welcome Page](public/images/welcome.png)
+![Welcome Page](JadwalBimbinganMahasiswa/public/images/welcome.png)
 *Welcome Page*
 
-![Login Page](public/images/login.png)
+![Login Page](JadwalBimbinganMahasiswa/public/images/login.png)
 *Login Page*
 
-![Admin Dashboard](public/images/panel_admin.png)
+![Admin Dashboard](JadwalBimbinganMahasiswa/public/images/panel_admin.png)
 *Admin Dashboard*
 
-![Dosen Dashboard](public/images/panel_dosen.png)
+![Dosen Dashboard](JadwalBimbinganMahasiswa/public/images/panel_dosen.png)
 *Dosen Dashboard*
 
-![Mahasiswa Dashboard](public/images/panel_mahasiswa.png)
+![Mahasiswa Dashboard](JadwalBimbinganMahasiswa/public/images/panel_mahasiswa.png)
 *Mahasiswa Dashboard*
 
 </div>
