@@ -382,7 +382,7 @@ class AdminController extends Controller
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
             'topik' => $request->topik,
-            'status' => 'dipesan'
+            'status' => 'menunggu_persetujuan'
         ]);
 
         return redirect()->route('admin.jadwal.index')

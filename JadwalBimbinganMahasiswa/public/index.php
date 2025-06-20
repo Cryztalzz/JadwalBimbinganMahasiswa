@@ -14,33 +14,35 @@ require __DIR__.'/../vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+$app->handleRequest(
+    Request::capture()
+)->send();
 
 session_start();
 
-$user = [
-    'name' => 'John Doe',
-    'image' => 'https://via.placeholder.com/40'
-];
+// $user = [
+//     'name' => 'John Doe',
+//     'image' => 'https://via.placeholder.com/40'
+// ];
 
-$jadwal_bimbingan = [
-    [
-        'id' => 1,
-        'nama_mahasiswa' => 'John Doe',
-        'dosen' => 'Dr. Jane Smith',
-        'tanggal' => '2024-03-20',
-        'waktu' => '09:00',
-        'status' => 'Diterima'
-    ],
-    [
-        'id' => 2,
-        'nama_mahasiswa' => 'Jane Doe',
-        'dosen' => 'Dr. John Smith',
-        'tanggal' => '2024-03-21',
-        'waktu' => '10:00',
-        'status' => 'Menunggu'
-    ]
-];
+// $jadwal_bimbingan = [
+//     [
+//         'id' => 1,
+//         'nama_mahasiswa' => 'John Doe',
+//         'dosen' => 'Dr. Jane Smith',
+//         'tanggal' => '2024-03-20',
+//         'waktu' => '09:00',
+//         'status' => 'Diterima'
+//     ],
+//     [
+//         'id' => 2,
+//         'nama_mahasiswa' => 'Jane Doe',
+//         'dosen' => 'Dr. John Smith',
+//         'tanggal' => '2024-03-21',
+//         'waktu' => '10:00',
+//         'status' => 'Menunggu'
+//     ]
+// ];
 ?>
 <!DOCTYPE html>
 <html lang="id">

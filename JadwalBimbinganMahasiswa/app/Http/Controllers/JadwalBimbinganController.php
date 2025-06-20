@@ -54,18 +54,18 @@ class JadwalBimbinganController extends Controller
         }
 
         try {
-            JadwalBimbingan::create([
-                'nim' => $mahasiswa->nim,
-                'id_dosen' => $request->dosen_id,
-                'tanggal' => $request->tanggal,
-                'waktu_mulai' => $request->waktu_mulai,
-                'waktu_selesai' => $request->waktu_selesai,
-                'topik' => $request->topik,
+        JadwalBimbingan::create([
+            'nim' => $mahasiswa->nim,
+            'id_dosen' => $request->dosen_id,
+            'tanggal' => $request->tanggal,
+            'waktu_mulai' => $request->waktu_mulai,
+            'waktu_selesai' => $request->waktu_selesai,
+            'topik' => $request->topik,
                 'status' => JadwalBimbingan::STATUS_MENUNGGU
-            ]);
+        ]);
 
-            return redirect()->route('jadwal-bimbingan.index')
-                ->with('success', 'Jadwal bimbingan berhasil dibuat');
+        return redirect()->route('jadwal-bimbingan.index')
+            ->with('success', 'Jadwal bimbingan berhasil dibuat');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat membuat jadwal bimbingan: ' . $e->getMessage());

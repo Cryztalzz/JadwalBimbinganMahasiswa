@@ -47,18 +47,19 @@
                                 <td>{{ $j->dosen->nama_dosen }}</td>
                                 <td>{{ $j->topik }}</td>
                                 <td>
-                                    @if($j->status == 'menunggu_persetujuan')
+                                    @php $status = strtolower(trim($j->status)); @endphp
+                                    @if($status == 'menunggu_persetujuan')
                                         <span class="badge bg-warning">Menunggu Persetujuan</span>
-                                    @elseif($j->status == 'disetujui')
+                                    @elseif($status == 'disetujui')
                                         <span class="badge bg-success">Disetujui</span>
-                                    @elseif($j->status == 'ditolak')
+                                    @elseif($status == 'ditolak')
                                         <span class="badge bg-danger">Ditolak</span>
-                                    @elseif($j->status == 'dibatalkan')
+                                    @elseif($status == 'dibatalkan')
                                         <span class="badge bg-secondary">Dibatalkan</span>
-                                    @elseif($j->status == 'selesai')
+                                    @elseif($status == 'selesai')
                                         <span class="badge bg-info">Selesai</span>
                                     @else
-                                        <span class="badge bg-dark">{{ ucfirst($j->status) }}</span>
+                                        <span class="badge bg-dark">{{ ucfirst($status) }}</span>
                                     @endif
                                 </td>
                                 <td>

@@ -92,41 +92,52 @@
                             </thead>
                             <tbody>
                                 @forelse($jadwalBimbingan as $jadwal)
-                                    <tr>
+                                <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
-                                        <td>{{ $jadwal->dosen->nama_dosen }}</td>
-                                        <td>{{ $jadwal->topik }}</td>
-                                        <td>
-                                            @if($jadwal->status === 'menunggu persetujuan')
-                                                <span class="badge bg-warning">Menunggu Persetujuan</span>
-                                            @elseif($jadwal->status === 'disetujui')
-                                                <span class="badge bg-success">Disetujui</span>
-                                            @elseif($jadwal->status === 'ditolak')
-                                                <span class="badge bg-danger">Ditolak</span>
-                                            @elseif($jadwal->status === 'selesai')
-                                                <span class="badge bg-info">Selesai</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($jadwal->status === 'selesai')
-                                                @if($jadwal->penilaianMahasiswa)
-                                                    <a href="{{ route('mahasiswa.penilaian.show', $jadwal->id_jadwal) }}" class="btn btn-info btn-sm">
-                                                        <i class="fas fa-eye"></i> Lihat Penilaian
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('mahasiswa.penilaian.create', $jadwal->id_jadwal) }}" class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-star"></i> Beri Penilaian
-                                                    </a>
-                                                @endif
-                                            @endif
-                                        </td>
-                                    </tr>
+                                    <td>{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i') }}</td>
+                                    <td>{{ $jadwal->dosen->nama_dosen }}</td>
+                                    <td>{{ $jadwal->topik }}</td>
+                                    <td>
+                                        @if($jadwal->status === 'menunggu_persetujuan')
+                                            <span class="badge bg-warning">Menunggu Persetujuan</span>
+                                        @elseif($jadwal->status === 'disetujui')
+                                            <span class="badge bg-success">Disetujui</span>
+                                        @elseif($jadwal->status === 'ditolak')
+                                            <span class="badge bg-danger">Ditolak</span>
+                                        @elseif($jadwal->status === 'dibatalkan')
+                                            <span class="badge bg-secondary">Dibatalkan</span>
+                                        @elseif($jadwal->status === 'selesai')
+                                            <span class="badge bg-info">Selesai</span>
+                                        @else
+                                            <span class="badge bg-dark">{{ ucfirst($jadwal->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($jadwal->status == 'menunggu_persetujuan')
+                                            <form action="{{ route('jadwal-bimbingan.cancel', $jadwal->id_jadwal) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin membatalkan jadwal ini?')">
+                                                    <i class="fas fa-times me-1"></i>Batalkan
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($jadwal->status == 'selesai' && !$jadwal->penilaianMahasiswa)
+                                            <a href="{{ route('mahasiswa.penilaian.create', $jadwal->id_jadwal) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-star"></i> Beri Penilaian
+                                            </a>
+                                        @endif
+                                        @if($jadwal->penilaianMahasiswa)
+                                            <a href="{{ route('mahasiswa.penilaian.show', $jadwal->id_jadwal) }}" class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye"></i> Lihat Penilaian
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
+                                <tr>
                                         <td colspan="7" class="text-center">Tidak ada jadwal bimbingan</td>
-                                    </tr>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -149,16 +160,16 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="id_dosen" class="form-label">Dosen</label>
-                        <select class="form-select @error('id_dosen') is-invalid @enderror" id="id_dosen" name="id_dosen" required>
+                        <label for="dosen_id" class="form-label">Dosen</label>
+                        <select class="form-select @error('dosen_id') is-invalid @enderror" id="dosen_id" name="dosen_id" required>
                             <option value="">Pilih Dosen</option>
                             @foreach($dosen as $d)
-                                <option value="{{ $d->id_dosen }}" {{ old('id_dosen') == $d->id_dosen ? 'selected' : '' }}>
-                                    {{ $d->nama_dosen }} ({{ $d->nip }})
-                                </option>
+                                    <option value="{{ $d->id_dosen }}" {{ old('dosen_id') == $d->id_dosen ? 'selected' : '' }}>
+                                        {{ $d->nama_dosen }} ({{ $d->nip }})
+                                    </option>
                             @endforeach
                         </select>
-                        @error('id_dosen')
+                        @error('dosen_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

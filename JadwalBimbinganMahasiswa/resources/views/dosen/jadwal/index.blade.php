@@ -35,8 +35,8 @@
                                     <td>
                                         @if($j->status == 'tersedia')
                                             <span class="badge bg-success">Tersedia</span>
-                                        @elseif($j->status == 'dipesan')
-                                            <span class="badge bg-warning">Dipesan</span>
+                                        @elseif($j->status == 'menunggu_persetujuan')
+                                            <span class="badge bg-warning">Menunggu Persetujuan</span>
                                         @else
                                             <span class="badge bg-info">Selesai</span>
                                         @endif

@@ -12,9 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Ubah tipe data kolom status
+        // Ubah tipe data kolom status menjadi enum baru
         Schema::table('jadwal_bimbingan', function (Blueprint $table) {
-            $table->string('status', 20)->change();
+            $table->enum('status', ['menunggu_persetujuan', 'disetujui', 'ditolak', 'dibatalkan', 'selesai'])->default('menunggu_persetujuan')->change();
         });
 
         // Update nilai status yang ada
@@ -36,6 +36,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Kembalikan tipe data kolom status ke string (atau enum lama jika perlu)
+        Schema::table('jadwal_bimbingan', function (Blueprint $table) {
+            $table->string('status', 20)->change();
+        });
+
         // Kembalikan nilai status ke nilai sebelumnya
         DB::table('jadwal_bimbingan')
             ->where('status', 'menunggu_persetujuan')
@@ -44,10 +49,5 @@ return new class extends Migration
         DB::table('jadwal_bimbingan')
             ->where('status', 'selesai')
             ->update(['status' => 'selesai']);
-
-        // Kembalikan tipe data kolom status
-        Schema::table('jadwal_bimbingan', function (Blueprint $table) {
-            $table->string('status', 10)->change();
-        });
     }
 }; 

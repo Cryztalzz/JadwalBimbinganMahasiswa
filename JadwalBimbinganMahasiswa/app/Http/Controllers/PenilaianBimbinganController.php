@@ -35,7 +35,7 @@ class PenilaianBimbinganController extends Controller
         ]);
 
         $jadwal = JadwalBimbingan::findOrFail($id_jadwal);
-
+        
         // Pastikan hanya dosen yang terkait yang bisa memberikan penilaian
         if ($jadwal->id_dosen != auth()->user()->dosen->id_dosen) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk memberikan penilaian');
@@ -64,7 +64,7 @@ class PenilaianBimbinganController extends Controller
     {
         $jadwal = JadwalBimbingan::with(['mahasiswa', 'dosen', 'penilaianBimbingan'])
             ->findOrFail($id_jadwal);
-
+        
         if (!$jadwal->penilaianBimbingan) {
             return redirect()->back()->with('error', 'Penilaian belum diberikan');
         }

@@ -75,7 +75,7 @@ class MahasiswaController extends Controller
             ->get();
 
         $dosen = Dosen::all();
-
+        
         return view('mahasiswa.dashboard', compact('jadwalBimbingan', 'dosen'));
     }
 
